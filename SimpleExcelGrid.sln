@@ -7,7 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleGrid", "SimpleGrid\Si
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Galador.ExcelGrid", "Galador.ExcelGrid\Galador.ExcelGrid.csproj", "{BA761C03-7E72-461A-9CCF-A473F363E5C2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelGridDemo", "ExcelGridDemo\ExcelGridDemo.csproj", "{4822AFFB-520D-4959-8503-2618D3DF842B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExcelGridDemo", "ExcelGridDemo\ExcelGridDemo.csproj", "{4822AFFB-520D-4959-8503-2618D3DF842B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FAB17895-FB0A-4952-B04A-F3EADFDF4DE5}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+		Screenshot1.png = Screenshot1.png
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
