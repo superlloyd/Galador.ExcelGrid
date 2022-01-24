@@ -36,8 +36,7 @@ namespace SimpleGrid
             //};
 
             var model = CreateModel();
-            theGrid.ItemsSource = model;
-            theGrid.ColumnHeadersSource = model.Columns;
+            theGrid.GridModel = model;
         }
         GridModel CreateModel()
         {
