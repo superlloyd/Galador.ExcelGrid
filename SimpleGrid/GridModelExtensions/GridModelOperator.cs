@@ -114,9 +114,6 @@ namespace SimpleGrid.GridModelExtensions
                 while (n-- > 0)
                     model.Columns.Insert(index, "");
             }
-
-            this.Owner.ColumnHeadersSource = null;
-            this.Owner.ColumnHeadersSource = model.Columns;
         }
 
         protected override bool DeleteItem(int index)
