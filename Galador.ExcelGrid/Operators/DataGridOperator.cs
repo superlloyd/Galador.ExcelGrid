@@ -371,9 +371,11 @@ namespace Galador.ExcelGrid.Operators
         /// </summary>
         public virtual void AutoGenerateColumns()
         {
+            this.Owner.ColumnDefinitions.Clear();
             foreach (var cd in this.GenerateColumnDefinitions(this.Owner.ItemsSource))
             {
                 this.Owner.ColumnDefinitions.Add(cd);
+                this.Owner.PropertyDefinitions.Add(cd);
             }
         }
 

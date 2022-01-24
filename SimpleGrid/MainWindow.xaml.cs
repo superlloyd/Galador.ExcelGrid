@@ -26,7 +26,7 @@ namespace SimpleGrid
             InitializeComponent();
 
             var model = CreateModel();
-            theGrid.GridModel = model;
+            theGrid.ItemsSource = model;
         }
         GridModel CreateModel()
         {
