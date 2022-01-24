@@ -1,0 +1,15 @@
+﻿<Window x:Class="ExcelGridDemo.IsEnabledBindingSourceExample"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:p="http://schemas.galador.net/xaml/spreadsheet"
+        Title="WrapItems: IsEnabledBindingSource" Height="450" Width="300">
+    <Grid>
+        <p:DataGrid CellDefinitionFactory="{Binding CellDefinitionFactory}" ItemsSource="{Binding ItemsSource}" WrapItems="true">
+            <p:DataGrid.ColumnDefinitions>
+                <p:ColumnDefinition Header="A" HorizontalAlignment="Center" Width="*"/>
+                <p:ColumnDefinition Header="B" HorizontalAlignment="Center" Width="*"/>
+                <p:ColumnDefinition Header="C" HorizontalAlignment="Center" Width="*"/>
+            </p:DataGrid.ColumnDefinitions>
+        </p:DataGrid>
+    </Grid>
+</Window>

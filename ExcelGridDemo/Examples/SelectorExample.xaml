@@ -1,0 +1,19 @@
+﻿<Window x:Class="ExcelGridDemo.SelectorExample"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:p="http://schemas.galador.net/xaml/spreadsheet"
+        Title="Selectors" Height="450" Width="800">
+    <Grid>
+        <p:DataGrid ItemsSource="{Binding Items}">
+            <p:DataGrid.ColumnDefinitions>
+                <p:ColumnDefinition PropertyName="Fruit1" Header="Fruit1" Width="*"/>
+                <p:ColumnDefinition PropertyName="Fruit2" Header="Fruit2" Width="*"/>
+                <p:ColumnDefinition PropertyName="City1" Header="City1" Width="*"/>
+                <p:ColumnDefinition PropertyName="City2" Header="City2" Width="*" />
+                <p:ColumnDefinition PropertyName="City3" Header="City3" Width="*" />
+                <p:ColumnDefinition PropertyName="City4" Header="City4" Width="*" />
+                <p:ColumnDefinition PropertyName="SelectedAnimal" DisplayMemberPath="Name" Header="SelectedAnimal" Width="*" />
+            </p:DataGrid.ColumnDefinitions>
+        </p:DataGrid>
+    </Grid>
+</Window>

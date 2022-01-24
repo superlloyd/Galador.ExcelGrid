@@ -1,0 +1,17 @@
+﻿<Window x:Class="ExcelGridDemo.EasyInsertExample"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:p="http://schemas.galador.net/xaml/spreadsheet"
+        xmlns:dataGridDemo="clr-namespace:ExcelGridDemo"
+        Title="EasyInsert" Height="450" Width="900">
+    <Window.DataContext>
+        <dataGridDemo:ExampleViewModel/>
+    </Window.DataContext>
+    <DockPanel>
+        <CheckBox Name="CheckBox1" IsChecked="True" Content="IsEasyInsertByKeyboardEnabled" DockPanel.Dock="Top" Margin="8"/>
+        <CheckBox Name="CheckBox2" IsChecked="True" Content="IsEasyInsertByMouseEnabled" DockPanel.Dock="Top" Margin="8"/>
+        <p:DataGrid ItemsSource="{Binding ItemsSource}" 
+                    IsEasyInsertByKeyboardEnabled="{Binding IsChecked, ElementName=CheckBox1}"
+                    IsEasyInsertByMouseEnabled="{Binding IsChecked, ElementName=CheckBox2}"/>
+    </DockPanel>
+</Window>

@@ -1,0 +1,17 @@
+﻿<Window x:Class="ExcelGridDemo.NaturalSortingExample"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:p="http://schemas.galador.net/xaml/spreadsheet"
+        Title="Natural sorting" Height="450" Width="600">
+    <Window.Resources>
+        <p:NaturalSortDescriptionComparer x:Key="CustomComparer"/>
+    </Window.Resources>
+    <Grid>
+        <p:DataGrid ItemsSource="{Binding ItemsSource}" CustomSort="{StaticResource CustomComparer}">
+            <p:DataGrid.ColumnDefinitions>
+                <p:ColumnDefinition PropertyName="String" Width="2*"  Header="string"/>
+                <p:ColumnDefinition PropertyName="Integer" Width="1*" HorizontalAlignment="Center" Header="integer"/>
+            </p:DataGrid.ColumnDefinitions>
+        </p:DataGrid>
+    </Grid>
+</Window>
