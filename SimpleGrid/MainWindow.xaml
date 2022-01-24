@@ -5,12 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:gxs="http://schemas.galador.net/xaml/spreadsheet"
         xmlns:local="clr-namespace:SimpleGrid"
-        xmlns:model="clr-namespace:SimpleGrid.Models"
+        xmlns:gme="clr-namespace:SimpleGrid.GridModelExtensions"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
 
-        <gxs:DataGrid x:Name="theGrid"/>
+        <gme:GridModelDataGrid x:Name="theGrid"/>
 
     </Grid>
 </Window>

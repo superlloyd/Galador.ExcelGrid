@@ -1,4 +1,4 @@
-﻿using SimpleGrid.Models;
+﻿using SimpleGrid.GridModelExtensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,9 +35,24 @@ namespace SimpleGrid
             //    new string[] { "One", "Two", "Three", },
             //};
 
-            var model = new GridModel();
-            theGrid.ItemsSource = model.Rows;
+            var model = CreateModel();
+            theGrid.ItemsSource = model;
             theGrid.ColumnHeadersSource = model.Columns;
+        }
+        GridModel CreateModel()
+        {
+            var model = new GridModel();
+            model.Columns.Add("One");
+            model.Columns.Add("Two");
+            model.Columns.Add("Three");
+            for (int i = 0; i < 6; i++)
+            {
+                var r = model.AddRow();
+                r[0] = i + " One";
+                r[1] = i + " Two";
+                r[2] = i + " Three";
+            }
+            return model;
         }
     }
 }

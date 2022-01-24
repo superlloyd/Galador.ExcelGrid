@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="NReco.Csv" Version="1.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Galador.ExcelGrid\Galador.ExcelGrid.csproj" />
   </ItemGroup>
 
