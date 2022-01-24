@@ -25,16 +25,6 @@ namespace SimpleGrid
         {
             InitializeComponent();
 
-            //theGrid.ItemsSource = new[]
-            //{
-            //    new string[] { "One", "Two", "Three", },
-            //    new string[] { "One", "Two", "Three", },
-            //    new string[] { "One", "Two", "Three", },
-            //    new string[] { "One", "Two", "Three", },
-            //    new string[] { "One", "Two", "Three", },
-            //    new string[] { "One", "Two", "Three", },
-            //};
-
             var model = CreateModel();
             theGrid.GridModel = model;
         }
