@@ -1,4 +1,5 @@
-﻿using Galador.ExcelGrid;
+﻿using Galador.Document.Grid;
+using Galador.ExcelGrid;
 using System;
 using System.Collections.Generic;
 using System.Linq;

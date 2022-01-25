@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Galador.WPF.ExcelGrid
+namespace Galador.Document.Grid
 {
     internal class RowColumnsProvider : TypeDescriptionProvider
     {

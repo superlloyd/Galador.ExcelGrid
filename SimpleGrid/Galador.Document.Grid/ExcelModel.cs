@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Galador.WPF.ExcelGrid
+namespace Galador.Document.Grid
 {
     public partial class ExcelModel : IList<ExcelModel.Row>, IList, INotifyCollectionChanged, INotifyPropertyChanged
     {

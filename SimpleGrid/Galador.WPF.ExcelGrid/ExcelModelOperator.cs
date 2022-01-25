@@ -1,4 +1,5 @@
-﻿using Galador.ExcelGrid;
+﻿using Galador.Document.Grid;
+using Galador.ExcelGrid;
 using Galador.ExcelGrid.Comparers;
 using Galador.ExcelGrid.Definitions;
 using Galador.ExcelGrid.Helpers;
