@@ -7,7 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Galador.ExcelGrid
+namespace Galador.ExcelGrid.Helpers
 {
     using System;
     using System.Globalization;
