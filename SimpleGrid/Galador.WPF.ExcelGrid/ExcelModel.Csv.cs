@@ -13,10 +13,6 @@ namespace Galador.WPF.ExcelGrid
     {
         public void ToCsv(StringWriter writer)
         {
-            for (int i = 0; i < ColumnCount; i++)
-                writer.Write((int)Alignments[i]);
-            writer.WriteLine();
-
             var cw = new CsvWriter(writer);
             foreach (var row in rows)
             {
@@ -49,18 +45,15 @@ namespace Galador.WPF.ExcelGrid
             if (clear)
                 Clear();
 
-            var line = reader.ReadLine()?.Trim();
-            if (line == null)
-                return;
-
-            ColumnCount = line.Length;
-
-            for (int i = 0; i < line.Length; i++)
-                Alignments[i] = (HorizontalAlignment)(line[i] - '0');
-
             var cr = new CsvReader(reader);
+            var first = true;
             while (cr.Read())
             {
+                if (first)
+                {
+                    first = false;
+                    ColumnCount = cr.FieldsCount;
+                }
                 var row = this.AddRow();
                 for (int i = 0; i < cr.FieldsCount && i < this.ColumnCount; i++)
                     row.Set(i, cr[i]);

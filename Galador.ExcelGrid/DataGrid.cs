@@ -2503,7 +2503,7 @@ namespace Galador.ExcelGrid
                 }
             }
 
-            this.RefreshIfRequired();
+            this.RefreshIfRequired(this.ItemsInColumns);
 
             return actualIndex;
         }
@@ -2973,7 +2973,7 @@ namespace Galador.ExcelGrid
             var from = Math.Min(this.CurrentCell.Column, this.SelectionCell.Column);
             var to = Math.Max(this.CurrentCell.Column, this.SelectionCell.Column);
             this.Operator.DeleteColumns(from, to - from + 1);
-            this.RefreshIfRequired();
+            this.RefreshIfRequired(true);
 
             var maxColumn = this.Columns > 0 ? this.Columns - 1 : 0;
             if (this.CurrentCell.Column > maxColumn)
@@ -3380,7 +3380,7 @@ namespace Galador.ExcelGrid
             var to = Math.Max(this.CurrentCell.Column, this.SelectionCell.Column);
 
             this.Operator.InsertColumns(from, to - from + 1);
-            this.RefreshIfRequired();
+            this.RefreshIfRequired(true);
         }
 
         /// <summary>
@@ -3397,9 +3397,9 @@ namespace Galador.ExcelGrid
         /// <summary>
         /// Refreshes the collection view and updates the grid content, if the ItemsSource is not implementing INotifyCollectionChanged.
         /// </summary>
-        private void RefreshIfRequired()
+        private void RefreshIfRequired(bool force = false)
         {
-            if (!(this.ItemsSource is INotifyCollectionChanged))
+            if (force || !(this.ItemsSource is INotifyCollectionChanged))
             {
                 this.CollectionView?.Refresh();
             }

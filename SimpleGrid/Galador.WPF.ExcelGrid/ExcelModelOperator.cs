@@ -22,6 +22,7 @@ namespace Galador.WPF.ExcelGrid
         public DataGrid Owner { get; }
 
         public GridLength DefaultColumnWidth { get; set; } = new GridLength(1, GridUnitType.Star);
+        public HorizontalAlignment DefaultHorizontalAlignment { get; set; } = HorizontalAlignment.Left;
 
         ExcelModel? Model => this.Owner.ItemsSource as ExcelModel;
 
@@ -117,7 +118,7 @@ namespace Galador.WPF.ExcelGrid
             {
                 Header = header,
                 PropertyName = header,
-                HorizontalAlignment = model?.Alignments[index] ?? HorizontalAlignment.Left,
+                HorizontalAlignment = DefaultHorizontalAlignment,
                 Width = this.DefaultColumnWidth
             };
             return cd;

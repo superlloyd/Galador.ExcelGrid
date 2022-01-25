@@ -15,13 +15,6 @@ namespace Galador.WPF.ExcelGrid
     {
         readonly List<Row> rows = new List<Row>();
 
-        public ExcelModel()
-        {
-            Alignments = new AlignmentCollection(this);
-        }
-
-        public AlignmentCollection Alignments { get; }
-
         public int ColumnCount
         {
             get => columnCount;
@@ -327,86 +320,11 @@ namespace Galador.WPF.ExcelGrid
             }
             internal void DeleteColumns(int index, int count)
             {
-                var N = Grid.ColumnCount;
+                var N = Grid.ColumnCount + count;
                 for (int i = index; i < N; i++)
                     Set(i, i < N - count ? Get(i + count) : null);
                 PropertyChanged?.Invoke(index, new PropertyChangedEventArgs(null));
             }
         }
     }
-
-    public class AlignmentCollection : IList<HorizontalAlignment>
-    {
-        readonly Dictionary<int, HorizontalAlignment> alignments = new();
-
-        internal AlignmentCollection(ExcelModel grid)
-        {
-            Grid = grid;
-        }
-        public ExcelModel Grid { get; }
-
-        public HorizontalAlignment this[int index] 
-        {
-            get => Get(index);
-            set
-            {
-                if (index < 0 || index >= Count)
-                    throw new ArgumentOutOfRangeException();
-                Set(index, value);
-            }
-        }
-
-        internal void Set(int index, HorizontalAlignment align)
-        {
-            if (align == HorizontalAlignment.Left)
-                alignments.Remove(index);
-            else
-                alignments[index] = align;
-        }
-        internal HorizontalAlignment Get(int index)
-        {
-            if (alignments.TryGetValue(index, out HorizontalAlignment result))
-                return result;
-            return HorizontalAlignment.Left;
-        }
-
-        public int Count => Grid.ColumnCount;
-
-        public bool IsReadOnly => false;
-
-        void ICollection<HorizontalAlignment>.Add(HorizontalAlignment item) => throw new NotSupportedException();
-
-        void ICollection<HorizontalAlignment>.Clear() => throw new NotSupportedException();
-
-        public bool Contains(HorizontalAlignment item)
-            => IndexOf(item) > -1;
-
-        public void CopyTo(HorizontalAlignment[] array, int arrayIndex)
-        {
-            for (int i = 0; i < Count && i + arrayIndex < array.Length; i++)
-                array[i + arrayIndex] = this[i];
-        }
-
-        public IEnumerator<HorizontalAlignment> GetEnumerator()
-        {
-            for (int i = 0; i < Count; i++)
-                yield return Get(i);
-        }
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-        public int IndexOf(HorizontalAlignment item)
-        {
-            for (int i = 0; i < Count; i++)
-                if (Get(i) == item)
-                    return i;
-            return -1;
-        }
-
-        void IList<HorizontalAlignment>.Insert(int index, HorizontalAlignment item) => throw new NotSupportedException();
-
-        bool ICollection<HorizontalAlignment>.Remove(HorizontalAlignment item) => false;
-
-        void IList<HorizontalAlignment>.RemoveAt(int index) => throw new NotSupportedException();
-    }
-
 }
