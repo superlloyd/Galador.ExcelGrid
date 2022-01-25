@@ -9,10 +9,12 @@
 
 namespace ExcelGridDemo
 {
+    using Galador.ExcelGrid.Controls;
+    using Galador.ExcelGrid.Definitions;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Windows.Data;
     using System.Windows.Media;
-    using Galador.ExcelGrid.CellDefinitions;
  
     /// <summary>
     /// Interaction logic for BackgroundBindingSourceExample.
@@ -32,11 +34,11 @@ namespace ExcelGridDemo
                                       Brushes.LightBlue, Brushes.LightGray, Brushes.LightGray, Brushes.LightGray,
                                       Brushes.LightBlue,
                                   };
-            this.CellDefinitionFactory = new CustomCellDefinitionFactory(this.BackgroundSource);
+            this.ControlFactory = new CustomCellDefinitionFactory(this.BackgroundSource);
             this.DataContext = this;
         }
 
-        public CustomCellDefinitionFactory CellDefinitionFactory { get; set; }
+        public CustomCellDefinitionFactory ControlFactory { get; set; }
 
         /// <summary>
         /// Gets or sets the items.
@@ -45,7 +47,7 @@ namespace ExcelGridDemo
 
         public Brush[] BackgroundSource { get; }
 
-        public class CustomCellDefinitionFactory : CellDefinitionFactory
+        public class CustomCellDefinitionFactory : DefaultControlFactory
         {
             private readonly IList backgroundSource;
 
@@ -54,11 +56,13 @@ namespace ExcelGridDemo
                 this.backgroundSource = backgroundSource;
             }
 
-            protected override void ApplyProperties(CellDefinition cd, CellDescriptor d)
+            protected override Binding GetBackgroundBinding(CellDescriptor d)
             {
-                base.ApplyProperties(cd, d);
-                cd.BackgroundBindingSource = this.backgroundSource;
-                cd.BackgroundBindingPath = d.BindingPath;
+                var source = this.backgroundSource;
+                var path = d.BindingPath;
+                if (path == null)
+                    return null;
+                return new Binding(path) { Source = source };
             }
         }
     }

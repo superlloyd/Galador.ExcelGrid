@@ -9,7 +9,7 @@
 
 namespace ExcelGridDemo
 {
-    using Galador.ExcelGrid.CellDefinitions;
+    using Galador.ExcelGrid.Controls;
     using System;
     using System.Collections.ObjectModel;
 
@@ -29,7 +29,7 @@ namespace ExcelGridDemo
         public ObservableCollectionOfMassExample()
         {
             this.InitializeComponent();
-            this.CellDefinitionFactory.RegisterValueConverter(typeof(Mass), new MassValueConverter());
+            this.DefaultControlFactory.RegisterValueConverter(typeof(Mass), new MassValueConverter());
             this.DataContext = this;
         }
 
@@ -38,6 +38,6 @@ namespace ExcelGridDemo
         /// </summary>
         public ObservableCollection<Mass> Items => StaticItems;
 
-        public CellDefinitionFactory CellDefinitionFactory { get; } = new CellDefinitionFactory();
+        public DefaultControlFactory DefaultControlFactory { get; } = new DefaultControlFactory();
     }
 }

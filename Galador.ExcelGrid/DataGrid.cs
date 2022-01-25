@@ -26,9 +26,8 @@ namespace Galador.ExcelGrid
     using System.Windows.Markup;
     using System.Windows.Media;
     using System.Windows.Threading;
-    using Galador.ExcelGrid.CellDefinitions;
     using Galador.ExcelGrid.Comparers;
-    using Galador.ExcelGrid.ControlFactories;
+    using Galador.ExcelGrid.Controls;
     using Galador.ExcelGrid.DataAnnotations;
     using Galador.ExcelGrid.Helpers;
     using Galador.ExcelGrid.Operators;
@@ -204,18 +203,9 @@ namespace Galador.ExcelGrid
         /// </summary>
         public static readonly DependencyProperty ControlFactoryProperty = DependencyProperty.Register(
             nameof(ControlFactory),
-            typeof(IDataGridControlFactory),
+            typeof(IControlFactory),
             typeof(DataGrid),
-            new UIPropertyMetadata(new DefaultDataGridControlFactory()));
-
-        /// <summary>
-        /// Identifies the <see cref="CellDefinitionFactory"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty CellDefinitionFactoryProperty = DependencyProperty.Register(
-            nameof(CellDefinitionFactory),
-            typeof(ICellDefinitionFactory),
-            typeof(DataGrid),
-            new UIPropertyMetadata(new CellDefinitionFactory()));
+            new UIPropertyMetadata(new DefaultControlFactory()));
 
         /// <summary>
         /// Identifies the <see cref="CurrentCell"/> dependency property.
@@ -856,19 +846,10 @@ namespace Galador.ExcelGrid
         /// <summary>
         /// Gets or sets the control factory.
         /// </summary>
-        public IDataGridControlFactory ControlFactory
+        public IControlFactory ControlFactory
         {
-            get => (IDataGridControlFactory)this.GetValue(ControlFactoryProperty);
+            get => (IControlFactory)this.GetValue(ControlFactoryProperty);
             set => this.SetValue(ControlFactoryProperty, value);
-        }
-
-        /// <summary>
-        /// Gets or sets the cell definition factory.
-        /// </summary>
-        public ICellDefinitionFactory CellDefinitionFactory
-        {
-            get => (ICellDefinitionFactory)this.GetValue(CellDefinitionFactoryProperty);
-            set => this.SetValue(CellDefinitionFactoryProperty, value);
         }
 
         /// <summary>
@@ -2638,18 +2619,17 @@ namespace Galador.ExcelGrid
         private FrameworkElement CreateDisplayControl(CellRef cell)
         {
             var d = this.Operator.CreateCellDescriptor(cell);
-            var cd = this.CellDefinitionFactory.CreateCellDefinition(d);
-            var element = this.ControlFactory.CreateDisplayControl(cd);
+            var element = this.ControlFactory.CreateDisplayControl(d);
             if (element == null)
             {
 #if DEBUG
-                throw new InvalidOperationException("Display control not implemented for " + cd);
+                throw new InvalidOperationException("Display control not implemented for " + d);
 #else
                 return null;
 #endif
             }
 
-            element.DataContext = cd.BindingSource;
+            element.DataContext = d.BindingSource;
             element.SourceUpdated += (s, e) => this.CurrentCellSourceUpdated(cell);
 
             return element;
@@ -2665,14 +2645,13 @@ namespace Galador.ExcelGrid
         private FrameworkElement CreateEditControl(CellRef cell)
         {
             var d = this.Operator.CreateCellDescriptor(cell);
-            var cd = this.CellDefinitionFactory.CreateCellDefinition(d);
-            var element = this.ControlFactory.CreateEditControl(cd);
+            var element = this.ControlFactory.CreateEditControl(d);
             if (element == null)
             {
                 return null;
             }
 
-            element.DataContext = cd.BindingSource;
+            element.DataContext = d.BindingSource;
             element.SourceUpdated += (s, e) => this.CurrentCellSourceUpdated(cell);
 
             return element;

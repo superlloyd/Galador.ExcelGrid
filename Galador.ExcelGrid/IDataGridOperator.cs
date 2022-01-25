@@ -9,6 +9,7 @@
 
 namespace Galador.ExcelGrid
 {
+    using Galador.ExcelGrid.Definitions;
     using System;
     using System.ComponentModel;
 
@@ -41,7 +42,7 @@ namespace Galador.ExcelGrid
         /// </summary>
         /// <param name="cell">The cell.</param>
         /// <returns>A cell descriptor.</returns>
-        CellDefinitions.CellDescriptor CreateCellDescriptor(CellRef cell);
+        CellDescriptor CreateCellDescriptor(CellRef cell);
  
         /// <summary>
         /// Gets the binding path for the specified cell.

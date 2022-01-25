@@ -10,8 +10,10 @@
 namespace ExcelGridDemo
 {
     using Galador.ExcelGrid;
-    using Galador.ExcelGrid.CellDefinitions;
+    using Galador.ExcelGrid.Controls;
+    using Galador.ExcelGrid.Definitions;
     using System.Collections;
+    using System.Windows;
 
     /// <summary>
     /// Interaction logic for IsEnabledBindingSourceExample.
@@ -26,13 +28,13 @@ namespace ExcelGridDemo
             this.InitializeComponent();
             this.ItemsSource = new[] { 11d, 0, 0, 0, 22, 0, 0, 0, 33 };
             this.IsItemEnabled = new string[] { "yes", null, null, null, "yes", null, null, null, "yes" };
-            this.CellDefinitionFactory = new CustomCellDefinitionFactory(this.IsItemEnabled);
+            this.ControlFactory = new CustomCellDefinitionFactory(this.IsItemEnabled);
             this.DataContext = this;
         }
 
-        public ICellDefinitionFactory CellDefinitionFactory { get; }
+        public IControlFactory ControlFactory { get; }
 
-        public class CustomCellDefinitionFactory : CellDefinitionFactory
+        public class CustomCellDefinitionFactory : DefaultControlFactory
         {
             private readonly IList isItemEnabledSource;
 
@@ -41,12 +43,11 @@ namespace ExcelGridDemo
                 this.isItemEnabledSource = isItemEnabledSource;
             }
 
-            protected override void ApplyProperties(CellDefinition cd, CellDescriptor d)
+            protected override void SetIsEnabledBinding(CellDescriptor d, FrameworkElement element)
             {
-                base.ApplyProperties(cd, d);
-                cd.IsEnabledBindingSource = this.isItemEnabledSource;
-                cd.IsEnabledBindingParameter = "yes";
-                cd.IsEnabledBindingPath = d.BindingPath;
+                d.PropertyDefinition.IsEnabledBySource = this.isItemEnabledSource;
+                d.PropertyDefinition.IsEnabledByValue = "yes";
+                d.PropertyDefinition.IsEnabledByProperty = d.BindingPath;
             }
         }
 

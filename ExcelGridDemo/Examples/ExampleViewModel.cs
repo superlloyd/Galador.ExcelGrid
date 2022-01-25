@@ -1,7 +1,7 @@
 ﻿namespace ExcelGridDemo
 {
     using ExcelGridDemo.Utils;
-    using Galador.ExcelGrid.CellDefinitions;
+    using Galador.ExcelGrid.Controls;
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -18,7 +18,7 @@
 
         public ExampleViewModel()
         {
-            this.CellDefinitionFactory.RegisterValueConverter(typeof(Mass), new MassValueConverter());
+            this.ControlFactory.RegisterValueConverter(typeof(Mass), new MassValueConverter());
 
             this.ClearCommand = new DelegateCommand(this.Clear);
             this.ResetCommand = new DelegateCommand(this.Reset);
@@ -28,7 +28,7 @@
 
         public ObservableCollection<ExampleObject> ItemsSource => StaticItemsSource;
 
-        public CellDefinitionFactory CellDefinitionFactory { get; } = new CellDefinitionFactory();
+        public DefaultControlFactory ControlFactory { get; } = new DefaultControlFactory();
 
         public ICommand ClearCommand { get; }
 

@@ -6,7 +6,7 @@
         Title="ObservableCollection&lt;Mass&gt;" Height="450" Width="300">
     <Grid>
         <!--<p:DataGrid ItemsSource="{Binding Items}" CellDefinitionFactory="{Binding CellDefinitionFactory}"/>-->
-        <p:DataGrid ItemsSource="{Binding Items}" CellDefinitionFactory="{Binding CellDefinitionFactory}">
+        <p:DataGrid ItemsSource="{Binding Items}" ControlFactory="{Binding DefaultControlFactory}">
             <p:DataGrid.ColumnDefinitions>
                 <p:ColumnDefinition PropertyName="" Header="Mass" />
             </p:DataGrid.ColumnDefinitions>

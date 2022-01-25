@@ -4,10 +4,6 @@
         xmlns:p="http://schemas.galador.net/xaml/spreadsheet"
         Title="Extended Toolkit controls" Height="450" Width="900">
     <Grid>
-        <p:DataGrid ItemsSource="{Binding Items}">            
-            <p:DataGrid.ControlFactory>
-                <p:DefaultDataGridControlFactory />
-            </p:DataGrid.ControlFactory>
-        </p:DataGrid>
+        <p:DataGrid ItemsSource="{Binding Items}"/>
     </Grid>
 </Window>

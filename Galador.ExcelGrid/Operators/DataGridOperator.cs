@@ -19,6 +19,7 @@ namespace Galador.ExcelGrid.Operators
     using System.Windows;
     using Galador.ExcelGrid.Comparers;
     using Galador.ExcelGrid.DataAnnotations;
+    using Galador.ExcelGrid.Definitions;
     using Galador.ExcelGrid.Helpers;
     using HorizontalAlignment = System.Windows.HorizontalAlignment;
 
@@ -314,10 +315,10 @@ namespace Galador.ExcelGrid.Operators
         /// </summary>
         /// <param name="cell">The cell.</param>
         /// <returns>A cell descriptor.</returns>
-        public CellDefinitions.CellDescriptor CreateCellDescriptor(CellRef cell)
+        public CellDescriptor CreateCellDescriptor(CellRef cell)
         {
             var pd = this.GetPropertyDefinition(cell);
-            var d = new CellDefinitions.CellDescriptor
+            var d = new CellDescriptor
             {
                 PropertyDefinition = pd,
                 Item = this.GetItem(cell),

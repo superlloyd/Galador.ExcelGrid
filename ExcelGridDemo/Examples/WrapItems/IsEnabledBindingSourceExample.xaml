@@ -4,7 +4,7 @@
         xmlns:p="http://schemas.galador.net/xaml/spreadsheet"
         Title="WrapItems: IsEnabledBindingSource" Height="450" Width="300">
     <Grid>
-        <p:DataGrid CellDefinitionFactory="{Binding CellDefinitionFactory}" ItemsSource="{Binding ItemsSource}" WrapItems="true">
+        <p:DataGrid ControlFactory="{Binding ControlFactory}" ItemsSource="{Binding ItemsSource}" WrapItems="true">
             <p:DataGrid.ColumnDefinitions>
                 <p:ColumnDefinition Header="A" HorizontalAlignment="Center" Width="*"/>
                 <p:ColumnDefinition Header="B" HorizontalAlignment="Center" Width="*"/>

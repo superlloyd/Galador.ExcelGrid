@@ -16,6 +16,5 @@ using System.Windows;
 [assembly: XmlnsDefinition("http://schemas.galador.net/xaml/spreadsheet", "Galador.ExcelGrid")]
 [assembly: XmlnsDefinition("http://schemas.galador.net/xaml/spreadsheet", "Galador.ExcelGrid.Definitions")]
 [assembly: XmlnsDefinition("http://schemas.galador.net/xaml/spreadsheet", "Galador.ExcelGrid.Helpers")]
-[assembly: XmlnsDefinition("http://schemas.galador.net/xaml/spreadsheet", "Galador.ExcelGrid.ControlFactories")]
 [assembly: XmlnsDefinition("http://schemas.galador.net/xaml/spreadsheet", "Galador.ExcelGrid.Comparers")]
 

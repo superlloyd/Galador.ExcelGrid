@@ -4,6 +4,6 @@
         xmlns:p="http://schemas.galador.net/xaml/spreadsheet"
         Title="List&lt;PlainObject&gt;" Height="450" Width="900">
     <Grid>
-        <p:DataGrid ItemsSource="{Binding ItemsSource}" CellDefinitionFactory="{Binding CellDefinitionFactory}"/>
+        <p:DataGrid ItemsSource="{Binding ItemsSource}" ControlFactory="{Binding DefaultControlFactory}"/>
     </Grid>
 </Window>

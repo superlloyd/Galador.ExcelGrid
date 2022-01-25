@@ -7,9 +7,8 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Galador.ExcelGrid.ControlFactories
+namespace Galador.ExcelGrid.Controls
 {
-    using Galador.ExcelGrid.CellDefinitions;
     using Galador.ExcelGrid.Controls;
     using Galador.ExcelGrid.Definitions;
     using Galador.ExcelGrid.Helpers;
@@ -25,8 +24,31 @@ namespace Galador.ExcelGrid.ControlFactories
 
     using HorizontalAlignment = System.Windows.HorizontalAlignment;
 
-    public class DefaultDataGridControlFactory2 : IDataGridControlFactory2
+    public class DefaultControlFactory : IControlFactory
     {
+        private readonly Dictionary<Type, IValueConverter> valueConverters = new Dictionary<Type, IValueConverter>();
+
+        /// <summary>
+        /// Registers the value converter for the specified type.
+        /// </summary>
+        /// <param name="forInstancesOf">The type of instances the converter is applied to.</param>
+        /// <param name="converter">The converter.</param>
+        public void RegisterValueConverter(Type forInstancesOf, IValueConverter converter)
+        {
+            this.valueConverters[forInstancesOf] = converter;
+        }
+        public IValueConverter GetValueConverter(CellDescriptor d)
+        {
+            if (d.PropertyDefinition.Converter != null)
+                return d.PropertyDefinition.Converter;
+
+            foreach (var type in this.valueConverters.Keys)
+                if (d.PropertyType.IsAssignableFrom(type))
+                    return this.valueConverters[type];
+
+            return null;
+        }
+
         public FrameworkElement CreateDisplayControl(CellDescriptor d)
         {
             var element = this.CreateDisplayControlOverride(d);
@@ -148,7 +170,7 @@ namespace Galador.ExcelGrid.ControlFactories
             var binding = new Binding(d.BindingPath)
             {
                 Mode = bindingMode,
-                Converter = d.PropertyDefinition.Converter,
+                Converter = GetValueConverter(d),
                 ConverterParameter = d.PropertyDefinition.ConverterParameter,
                 StringFormat = formatString,
                 ValidatesOnDataErrors = true,
@@ -394,7 +416,7 @@ namespace Galador.ExcelGrid.ControlFactories
             this.SetBackgroundBinding(d, c);
 
 #if DATAGRID_DEBUG_INFO
-            c.ToolTip = $"Binding: {binding.Path.Path} {binding.Mode} {binding.Source}\nConverter: {d.PropertyDefinition.Converter} {d.PropertyDefinition.ConverterParameter}\nBindingSource: {d.BindingSource}";
+            c.ToolTip = $"Binding: {binding.Path.Path} {binding.Mode} {binding.Source}\nConverter: {GetValueConverter(d)} {d.PropertyDefinition.ConverterParameter}\nBindingSource: {d.BindingSource}";
 #endif
             return c;
         }

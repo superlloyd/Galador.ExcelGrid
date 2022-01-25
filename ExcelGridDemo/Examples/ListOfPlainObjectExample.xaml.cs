@@ -9,7 +9,7 @@
 
 namespace ExcelGridDemo
 {
-    using Galador.ExcelGrid.CellDefinitions;
+    using Galador.ExcelGrid.Controls;
     using System;
     using System.Collections.Generic;
     using System.Windows.Media;
@@ -26,7 +26,7 @@ namespace ExcelGridDemo
         {
             this.InitializeComponent();
 
-            this.CellDefinitionFactory.RegisterValueConverter(typeof(Mass), new MassValueConverter());
+            this.DefaultControlFactory.RegisterValueConverter(typeof(Mass), new MassValueConverter());
 
             this.ItemsSource = new List<PlainOldObject>
                                 {
@@ -62,6 +62,6 @@ namespace ExcelGridDemo
         /// </summary>
         public IList<PlainOldObject> ItemsSource { get; set; }
 
-        public CellDefinitionFactory CellDefinitionFactory { get; } = new CellDefinitionFactory();
+        public DefaultControlFactory DefaultControlFactory { get; } = new DefaultControlFactory();
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Galador.ExcelGrid.CellDefinitions
+﻿namespace Galador.ExcelGrid.Definitions
 {
     using System;
     using System.Collections.Generic;
