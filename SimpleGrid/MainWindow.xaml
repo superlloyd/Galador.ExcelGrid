@@ -15,6 +15,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel Orientation="Horizontal">
+            <Button Content="Save Check" Click="DoSaveCheck"/>
         </StackPanel>
         
         <gme:ExcelDataGrid x:Name="theGrid" Grid.Row="1" />

@@ -2,6 +2,7 @@
 using Galador.ExcelGrid.CellDefinitions;
 using Galador.ExcelGrid.Comparers;
 using Galador.ExcelGrid.Definitions;
+using Galador.ExcelGrid.Helpers;
 using Galador.ExcelGrid.Operators;
 using System;
 using System.Collections;
@@ -27,14 +28,13 @@ namespace Galador.WPF.ExcelGrid
 
         public int GetColumnCount() => Model?.ColumnCount ?? 0;
         public int GetRowCount() => Model?.RowCount ?? 0;
-        public string GetBindingPath(CellRef cell) => $"[{cell.Column}]"; // TODO: try that in INotifyPropertyChanged
+        public string GetBindingPath(CellRef cell) => $"[{cell.Column}]";
         public object? GetDataContext(CellRef cell)
         {
             var model = Model;
             if (model == null || cell.Row < 0 || cell.Row >= model.RowCount)
                 return null;
-            var rowIndex = GetItemsSourceIndex(cell.Row);
-            return model[rowIndex];
+            return model[Owner.FindSourceIndex(cell.Row)];
         }
 
         public bool TrySetCellValue(CellRef cell, object value)
@@ -51,8 +51,7 @@ namespace Galador.WPF.ExcelGrid
             if (cell.Column < 0 || cell.Column >= model.RowCount)
                 return false;
 
-            var rowIndex = GetItemsSourceIndex(cell.Row);
-            model[rowIndex, cell.Column] = (string)(value ?? "");
+            model[Owner.FindSourceIndex(cell.Row), cell.Column] = (string)(value ?? "");
             return true;
         }
         public object? GetCellValue(CellRef cell)
@@ -66,8 +65,7 @@ namespace Galador.WPF.ExcelGrid
             if (cell.Column < 0 || cell.Column >= model.RowCount)
                 return null;
 
-            var rowIndex = GetItemsSourceIndex(cell.Row);
-            return model[rowIndex, cell.Column];
+            return model[Owner.FindSourceIndex(cell.Row), cell.Column];
         }
 
         public Type GetPropertyType(CellRef cell) => typeof(string);
@@ -100,98 +98,6 @@ namespace Galador.WPF.ExcelGrid
             return d;
         }
 
-        /// <summary>
-        /// Converts the collection view index to an items source index.
-        /// </summary>
-        /// <param name="index">The index in the collection view.</param>
-        /// <returns>The index in the items source</returns>
-        public int GetItemsSourceIndex(int index)
-        {
-            var collectionView = this.Owner.CollectionView;
-            if (collectionView == null)
-            {
-                // no collection view, just return the index
-                return index;
-            }
-
-            // if not using custom sort, and not sorting
-            if (this.Owner.CustomSort == null && collectionView.SortDescriptions.Count == 0)
-            {
-                // return the same index
-                return index;
-            }
-
-            // if using custom sort, and not sorting
-            if (this.Owner.CustomSort is ISortDescriptionComparer sdc && sdc.SortDescriptions.Count == 0)
-            {
-                // return the same index
-                return index;
-            }
-
-            if (collectionView.IsEmpty)
-            {
-                // cannot find this in the collection view
-                return -1;
-            }
-
-            if (index < 0)
-                throw new InvalidOperationException("The collection view is probably out of sync. (GetItemsSourceIndex)");
-
-            // get the item at the specified index in the collection view
-            // TODO: find a better way to do this
-            var counter = 0;
-            foreach (var item in this.Owner.CollectionView)
-            {
-                if (counter++ == index)
-                {
-                    return Model?.IndexOf((ExcelModel.Row)item) ?? -1;
-                }
-            }
-            throw new InvalidOperationException("The collection view is probably out of sync. (GetItemsSourceIndex)");
-        }
-
-        /// <summary>
-        /// Converts the items source index to a collection view index.
-        /// </summary>
-        /// <param name="index">The index in the items source.</param>
-        /// <returns>The index in the collection view</returns>
-        public int GetCollectionViewIndex(int index)
-        {
-            if (this.Owner.CollectionView == null)
-            {
-                return index;
-            }
-
-            // if not using custom sort, and not sorting
-            if (this.Owner.CustomSort == null && this.Owner.CollectionView.SortDescriptions.Count == 0)
-            {
-                // return the same index
-                return index;
-            }
-
-            // if using custom sort, and not sorting
-            if (this.Owner.CustomSort is ISortDescriptionComparer sdc && sdc.SortDescriptions.Count == 0)
-            {
-                // return the same index
-                return index;
-            }
-
-            if (index < 0 || index >= this.Owner.ItemsSource.Count)
-            {
-                throw new InvalidOperationException("The collection view is probably out of sync. (GetCollectionViewIndex)");
-            }
-
-            // get the item at the specified index in the items source
-            var item = this.Owner.ItemsSource[index];
-            int result = 0;
-            foreach (var item2 in this.Owner.CollectionView)
-            {
-                if (item == item2)
-                    return result;
-                result++;
-            }
-            throw new InvalidOperationException("The collection view is probably out of sync. (GetCollectionViewIndex)");
-        }
         public bool CanSort(int index) => true;
 
         public void AutoGenerateColumns()
@@ -246,16 +152,16 @@ namespace Galador.WPF.ExcelGrid
             if (model == null)
                 return;
 
-            var rowIndex = GetItemsSourceIndex(index);
-            if (rowIndex < 0)
+            if (index < 0)
             {
                 while (n-- > 0)
                     model.AddRow();
             }
             else
             {
+                index = Owner.FindSourceIndex(index);
                 while (n-- > 0)
-                    model.InsertRowAt(rowIndex);
+                    model.InsertRowAt(index);
             }
         }
         public bool CanInsertColumns() => true;
@@ -291,9 +197,11 @@ namespace Galador.WPF.ExcelGrid
             if (model == null)
                 return;
 
-            var rowIndex = GetItemsSourceIndex(index);
-            while (n-- > 0)
-                model.RemoveAt(rowIndex);
+            for (int i = n - 1; i >= 0; i--)
+            {
+                var j = Owner.FindSourceIndex(index + i);
+                model.RemoveAt(j);
+            }
         }
         public bool CanDeleteColumns() => true;
         public void DeleteColumns(int index, int n)

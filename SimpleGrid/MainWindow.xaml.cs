@@ -29,33 +29,6 @@ namespace SimpleGrid
             var model = CreateModel();
             theGrid.ItemsSource = model;
             this.DataContext = model;
-
-            var source = new CollectionViewSource { Source = model };
-            var view = source.View;
-            view.SortDescriptions.Add(new System.ComponentModel.SortDescription
-            {
-                Direction = System.ComponentModel.ListSortDirection.Ascending,
-                PropertyName = "A",
-            });
-            view.Refresh();
-            Trace.WriteLine("Sorting....");
-            foreach (ExcelModel.Row row in view)
-            {
-                Trace.WriteLine(row[0]);
-            }
-
-            view.SortDescriptions.Clear();
-            view.SortDescriptions.Add(new System.ComponentModel.SortDescription
-            {
-                Direction = System.ComponentModel.ListSortDirection.Descending,
-                PropertyName = "A",
-            });
-            view.Refresh();
-            Trace.WriteLine("Sorting....");
-            foreach (ExcelModel.Row row in view)
-            {
-                Trace.WriteLine(row[0]);
-            }
         }
         ExcelModel CreateModel()
         {
@@ -69,6 +42,22 @@ namespace SimpleGrid
                 r[2] = i + " Three";
             }
             return model;
+        }
+
+        private void DoSaveCheck(object sender, RoutedEventArgs e)
+        {
+            var model = DataContext as ExcelModel;
+            var s1 = model!.ToCsv();
+            var model2 = ExcelModel.FromCsv(s1);
+            var s2 = model2.ToCsv();
+            var model3 = new ExcelModel();
+            model3.InitializeFromCsv(s2);
+            Debug.Assert(s1 == s2);
+            Debug.Assert(model.RowCount == model2.RowCount);
+            Debug.Assert(model.ColumnCount == model2.ColumnCount);
+            for (int i = 0; i < model.RowCount; i++)
+                for (int j = 0; j < model.ColumnCount; j++)
+                    Debug.Assert(model[i, j] == model2[i, j]);
         }
     }
 }

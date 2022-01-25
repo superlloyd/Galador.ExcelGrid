@@ -9,6 +9,7 @@
 
 namespace Galador.ExcelGrid.Operators
 {
+    using Galador.ExcelGrid.Helpers;
     using System;
     using System.Collections;
     using System.Collections.Generic;
@@ -201,10 +202,7 @@ namespace Galador.ExcelGrid.Operators
         /// The get item index.
         /// </returns>
         protected virtual int GetItemIndex(CellRef cell)
-        {
-            var index = this.Owner.ItemsInRows ? cell.Row : cell.Column;
-            return this.GetItemsSourceIndex(index);
-        }
+            => this.Owner.ItemsInRows ? Owner.FindSourceIndex(cell.Row) : cell.Column;
 
         /// <summary>
         /// Gets the binding path for the specified cell.

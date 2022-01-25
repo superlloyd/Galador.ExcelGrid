@@ -133,6 +133,8 @@ namespace Galador.ExcelGrid.Definitions
         /// <remarks>This property is used if the <see cref="IsEnabledByProperty"/> property is set.</remarks>
         public object IsEnabledByValue { get; set; }
 
+        public object IsEnabledBySource { get; set; }
+
         /// <summary>
         /// Gets or sets the background brush.
         /// </summary>

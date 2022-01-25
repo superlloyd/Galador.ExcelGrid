@@ -2816,7 +2816,7 @@ namespace Galador.ExcelGrid
             this.CollectionView?.Refresh();
             if (actualIndex != -1)
             {
-                var viewIndex = this.Operator.GetCollectionViewIndex(actualIndex);
+                var viewIndex = this.FindViewIndex(actualIndex);
 
                 var cell = this.ItemsInRows
                                ? new CellRef(viewIndex, 0)
@@ -3813,7 +3813,7 @@ namespace Galador.ExcelGrid
                     var actualIndex = this.Rows;
                     this.Operator.InsertRows(actualIndex, 1);
                     this.CollectionView?.Refresh();
-                    actualIndex = this.Operator.GetCollectionViewIndex(actualIndex);
+                    actualIndex = this.FindViewIndex(actualIndex);
                     actualCell = new CellRef(actualIndex, cell.Column);
                 }
 
@@ -3822,7 +3822,7 @@ namespace Galador.ExcelGrid
                     var actualIndex = this.Columns;
                     this.Operator.InsertColumns(actualIndex, 1);
                     this.CollectionView?.Refresh();
-                    actualIndex = this.Operator.GetCollectionViewIndex(actualIndex);
+                    actualIndex = this.FindViewIndex(actualIndex);
                     actualCell = new CellRef(cell.Row, actualIndex);
                 }
 

@@ -60,13 +60,6 @@ namespace Galador.ExcelGrid
         object GetCellValue(CellRef cell);
 
         /// <summary>
-        /// Converts the items source index to a collection view index.
-        /// </summary>
-        /// <param name="index">The index in the items source.</param>
-        /// <returns>The index in the collection view</returns>
-        int GetCollectionViewIndex(int index);
-
-        /// <summary>
         /// Inserts an item at the specified index.
         /// </summary>
         /// <param name="index">The index.</param>
@@ -91,13 +84,6 @@ namespace Galador.ExcelGrid
         /// <param name="value">The value.</param>
         /// <returns><c>true</c> if the cell value was set.</returns>
         bool TrySetCellValue(CellRef cell, object value);
-
-        /// <summary>
-        /// Gets the data context for the specified cell.
-        /// </summary>
-        /// <param name="cell">The cell.</param>
-        /// <returns>The context object.</returns>
-        object GetDataContext(CellRef cell);
 
         /// <summary>
         /// Determines whether columns can be deleted.

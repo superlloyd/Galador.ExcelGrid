@@ -9,7 +9,15 @@
 
 namespace Galador.ExcelGrid
 {
+    using Galador.ExcelGrid.CellDefinitions;
     using System.Windows;
+
+    public interface IDataGridControlFactory2
+    {
+        FrameworkElement CreateDisplayControl(CellDescriptor d);
+        FrameworkElement CreateEditControl(CellDescriptor d);
+    }
+
 
     /// <summary>
     /// Specifies a control factory for the <see cref="DataGrid" />.

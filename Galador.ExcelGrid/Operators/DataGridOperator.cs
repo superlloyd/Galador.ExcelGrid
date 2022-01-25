@@ -276,97 +276,6 @@ namespace Galador.ExcelGrid.Operators
         }
 
         /// <summary>
-        /// Converts the collection view index to an items source index.
-        /// </summary>
-        /// <param name="index">The index in the collection view.</param>
-        /// <returns>The index in the items source</returns>
-        public virtual int GetItemsSourceIndex(int index)
-        {
-            var collectionView = this.Owner.CollectionView;
-            if (collectionView == null)
-            {
-                // no collection view, just return the index
-                return index;
-            }
-
-            // if not using custom sort, and not sorting
-            if (this.Owner.CustomSort == null && collectionView.SortDescriptions.Count == 0)
-            {
-                // return the same index
-                return index;
-            }
-
-            // if using custom sort, and not sorting
-            if (this.Owner.CustomSort is ISortDescriptionComparer sdc && sdc.SortDescriptions.Count == 0)
-            {
-                // return the same index
-                return index;
-            }
-
-            if (collectionView.IsEmpty)
-            {
-                // cannot find this in the collection view
-                return -1;
-            }
-
-            // get the item at the specified index in the collection view
-            // TODO: find a better way to do this
-            if (!this.TryGetByIndex(collectionView, index, out var item))
-            {
-                throw new InvalidOperationException("The collection view is probably out of sync. (GetItemsSourceIndex)");
-            }
-
-            // get the index of the item in the items source
-            var i = this.Owner.ItemsSource.IndexOf(item);
-
-            return i;
-        }
-
-        /// <summary>
-        /// Converts the items source index to a collection view index.
-        /// </summary>
-        /// <param name="index">The index in the items source.</param>
-        /// <returns>The index in the collection view</returns>
-        public virtual int GetCollectionViewIndex(int index)
-        {
-            if (this.Owner.CollectionView == null)
-            {
-                return index;
-            }
-
-            // if not using custom sort, and not sorting
-            if (this.Owner.CustomSort == null && this.Owner.CollectionView.SortDescriptions.Count == 0)
-            {
-                // return the same index
-                return index;
-            }
-
-            // if using custom sort, and not sorting
-            if (this.Owner.CustomSort is ISortDescriptionComparer sdc && sdc.SortDescriptions.Count == 0)
-            {
-                // return the same index
-                return index;
-            }
-
-            if (index < 0 || index >= this.Owner.ItemsSource.Count)
-            {
-                throw new InvalidOperationException("The collection view is probably out of sync. (GetCollectionViewIndex)");
-            }
-
-            // get the item at the specified index in the items source
-            var item = this.Owner.ItemsSource[index];
-
-            // get the index of the item in the collection view
-            // TODO: find a better way to do this
-            if (!this.TryGetIndex(this.Owner.CollectionView, item, out var index2))
-            {
-                throw new InvalidOperationException("The collection view is probably out of sync. (GetCollectionViewIndex)");
-            }
-
-            return index2;
-        }
-
-        /// <summary>
         /// Auto-generates the columns.
         /// </summary>
         public virtual void AutoGenerateColumns()
@@ -578,8 +487,7 @@ namespace Galador.ExcelGrid.Operators
                 return false;
             }
 
-            index = this.GetItemsSourceIndex(index);
-
+            index = Owner.FindSourceIndex(index);
             if (index < 0 || index >= list.Count)
             {
                 return false;
