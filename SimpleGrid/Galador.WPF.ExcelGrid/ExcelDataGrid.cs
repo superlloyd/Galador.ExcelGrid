@@ -6,15 +6,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace SimpleGrid.GridModelExtensions
+namespace Galador.WPF.ExcelGrid
 {
-    public class GridModelDataGrid : DataGrid
+    public class ExcelDataGrid : DataGrid
     {
         protected override IDataGridOperator CreateOperator()
         {
             var list = this.ItemsSource;
-            if (list is GridModel)
-                return new GridModelOperator(this);
+            if (list is ExcelModel)
+                return new ExcelModelOperator(this);
 
             return base.CreateOperator();
         }

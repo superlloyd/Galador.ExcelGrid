@@ -7,59 +7,41 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
-namespace SimpleGrid.GridModelExtensions
+namespace Galador.WPF.ExcelGrid
 {
-    public partial class GridModel : IList<GridModel.Row>, IList, INotifyCollectionChanged
+    public partial class ExcelModel : IList<ExcelModel.Row>, IList, INotifyCollectionChanged, INotifyPropertyChanged
     {
         readonly List<Row> rows = new List<Row>();
 
-        public GridModel()
+        public ExcelModel()
         {
-            ObserveColumns();
+            Alignments = new AlignmentCollection(this);
         }
 
-        void ObserveColumns()
+        public AlignmentCollection Alignments { get; }
+
+        public int ColumnCount
         {
-            Columns.CollectionChanged += (o, e) => 
+            get => columnCount;
+            set
             {
-                var N = Columns.Count;
-                switch (e.Action)
-                {
-                    case NotifyCollectionChangedAction.Add:
-                        {
-                            int n = e.NewItems!.Count;
-                            foreach (var row in rows)
-                            {
-                                for (int i = N - 1; i >= e.NewStartingIndex + n; i--)
-                                    row.Set(i, row.Get(i - n));
-                                for (int i = 0; i < n; i++)
-                                    row.Set(i + e.NewStartingIndex, "");
-                            }
-                        }
-                        break;
-                    case NotifyCollectionChangedAction.Remove:
-                        {
-                            int n = e.OldItems!.Count;
-                            foreach (var row in rows)
-                            {
-                                for (int i = e.OldStartingIndex; i < N - n; i++)
-                                    row.Set(i, row.Get(i + n));
-                            }
-                        }
-                        break;
-                    case NotifyCollectionChangedAction.Move:
-                        throw new NotImplementedException();
-                    // nothing
-                    case NotifyCollectionChangedAction.Replace:
-                    case NotifyCollectionChangedAction.Reset:
-                    default:
-                        break;
-                }
-            };
+                if (value < 1)
+                    value = 1;
+                if (value > 26 * 27)
+                    value = 26 * 27;
+                if (value == ColumnCount)
+                    return;
+                columnCount = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ColumnCount)));
+            }
         }
+        int columnCount = 26;
 
-        public ObservableCollection<string> Columns { get; } = new ObservableCollection<string>();
+        public int RowCount => rows.Count;
+        int ICollection<Row>.Count => RowCount;
+        int ICollection.Count => RowCount;
 
         public string this[int row, int col]
         {
@@ -73,8 +55,6 @@ namespace SimpleGrid.GridModelExtensions
             set => throw new NotSupportedException();
         }
         public Row this[int index] => rows[index];
-
-        public int Count => rows.Count;
 
         bool ICollection<Row>.IsReadOnly => false;
 
@@ -93,10 +73,11 @@ namespace SimpleGrid.GridModelExtensions
         }
 
         public event NotifyCollectionChangedEventHandler? CollectionChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         void ICollection<Row>.Add(Row item) => throw new NotSupportedException();
 
-        public Row AddRow() => InsertRowAt(Count);
+        public Row AddRow() => InsertRowAt(RowCount);
 
         public Row InsertRowAt(int index)
         {
@@ -105,6 +86,7 @@ namespace SimpleGrid.GridModelExtensions
             var row = new Row(this);
             rows.Insert(index, row);
             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, (object?)row, index));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RowCount)));
             return row;
         }
 
@@ -115,13 +97,14 @@ namespace SimpleGrid.GridModelExtensions
             var old = rows.ToArray();
             rows.Clear();
             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove,old, 0));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RowCount)));
         }
 
         public bool Contains(Row? item) => IndexOf(item) > -1;
 
         public void CopyTo(Row[] array, int arrayIndex)
         {
-            for (int i = 0; i < Count && i + arrayIndex < array.Length; i++)
+            for (int i = 0; i < RowCount && i + arrayIndex < array.Length; i++)
                 array[i + arrayIndex] = this[i];
         }
 
@@ -132,7 +115,7 @@ namespace SimpleGrid.GridModelExtensions
         {
             if (item == null)
                 return -1;
-            for (int i = 0; i < Count; i++)
+            for (int i = 0; i < RowCount; i++)
             {
                 if (item == this[i])
                     return i;
@@ -153,11 +136,12 @@ namespace SimpleGrid.GridModelExtensions
 
         public void RemoveAt(int index)
         {
-            if (index < 0 || index >= Count)
+            if (index < 0 || index >= RowCount)
                 return;
             var row = this[index];
             rows.RemoveAt(index);
             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, (object?)row, index));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RowCount)));
         }
 
         int IList.Add(object? value) => throw new NotSupportedException();
@@ -176,47 +160,80 @@ namespace SimpleGrid.GridModelExtensions
                 throw new ArgumentNullException("array");
             if (array.Rank != 1)
                 throw new ArgumentException("Array Rank should be 1");
-            for (int i = 0; i < Count && i + index < array.Length; i++)
+            for (int i = 0; i < RowCount && i + index < array.Length; i++)
                 array.SetValue(this[i], i + index);
         }
 
+        public void InsertColumns(int index, int count)
+        {
+            if (index < 0 || index > ColumnCount || count < 0)
+                throw new ArgumentOutOfRangeException("index");
+            if (count == 0)
+                return;
+
+            ColumnCount += count;
+            if (index + count == ColumnCount)
+                return;
+
+            foreach (var row in this)
+                row.InsertColumns(index, count);
+        }
+        public void DeleteColumns(int index, int count)
+        {
+            if (index < 0 || index >= ColumnCount || count < 0 || index + count > ColumnCount || ColumnCount - count < 1)
+                throw new ArgumentOutOfRangeException("index");
+            if (count == 0)
+                return;
+
+            ColumnCount -= count;
+            foreach (var row in this)
+                row.DeleteColumns(index, count);
+        }
+
+        [TypeDescriptionProvider(typeof(RowColumnsProvider))]
         public class Row : IList<string>, IList, INotifyCollectionChanged, INotifyPropertyChanged
         {
-            readonly GridModel grid;
+            readonly ExcelModel grid;
             readonly Dictionary<int, string> row = new();
 
-            internal Row(GridModel grid)
+            internal Row(ExcelModel grid)
             {
                 this.grid = grid;
             }
+            public ExcelModel Grid => grid;
 
             public event NotifyCollectionChangedEventHandler? CollectionChanged;
             public event PropertyChangedEventHandler? PropertyChanged;
 
             public string this[int index]
             {
-                get
-                {
-                    row.TryGetValue(index, out var result);
-                    return result ?? "";
-                }
+                get => Get(index);
                 set
                 {
-                    if (index < 0 || index > Count) // allow for 1 extra column
+                    if (index < 0 || index >= Count)
                         throw new ArgumentOutOfRangeException(nameof(index));
 
                     var old = this[index];
                     if ((value ?? "") == old)
                         return;
-                    row[index] = value ?? "";
+
+                    Set(index, value);
                     CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, value, old, index));
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
                 }
             }
-            internal void Set(int index, string? value) => row[index] = value ?? string.Empty;
+            internal void Set(int index, string? value)
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    row.Remove(index);
+                    return;
+                }
+                row[index] = value;
+            }
             internal string Get(int index) => row.TryGetValue(index, out var result) ? result : "";
 
-            public int Count => grid.Columns.Count;
+            public int Count => grid.ColumnCount;
 
             bool ICollection<string>.IsReadOnly => false;
 
@@ -292,6 +309,104 @@ namespace SimpleGrid.GridModelExtensions
                 for (int i = 0; i < Count && i + index < array.Length; i++)
                     array.SetValue(this[i], i + index);
             }
+            internal void InsertColumns(int index, int count)
+            {
+                var N = Grid.ColumnCount;
+                for (int i = N - 1; i >= index; i--)
+                {
+                    if (i > index + count)
+                    {
+                        Set(i, Get(i - count));
+                    }
+                    else
+                    {
+                        Set(i, null);
+                    }
+                }
+                PropertyChanged?.Invoke(index, new PropertyChangedEventArgs(null));
+            }
+            internal void DeleteColumns(int index, int count)
+            {
+                var N = Grid.ColumnCount;
+                for (int i = index; i < N; i++)
+                    Set(i, i < N - count ? Get(i + count) : null);
+                PropertyChanged?.Invoke(index, new PropertyChangedEventArgs(null));
+            }
         }
     }
+
+    public class AlignmentCollection : IList<HorizontalAlignment>
+    {
+        readonly Dictionary<int, HorizontalAlignment> alignments = new();
+
+        internal AlignmentCollection(ExcelModel grid)
+        {
+            Grid = grid;
+        }
+        public ExcelModel Grid { get; }
+
+        public HorizontalAlignment this[int index] 
+        {
+            get => Get(index);
+            set
+            {
+                if (index < 0 || index >= Count)
+                    throw new ArgumentOutOfRangeException();
+                Set(index, value);
+            }
+        }
+
+        internal void Set(int index, HorizontalAlignment align)
+        {
+            if (align == HorizontalAlignment.Left)
+                alignments.Remove(index);
+            else
+                alignments[index] = align;
+        }
+        internal HorizontalAlignment Get(int index)
+        {
+            if (alignments.TryGetValue(index, out HorizontalAlignment result))
+                return result;
+            return HorizontalAlignment.Left;
+        }
+
+        public int Count => Grid.ColumnCount;
+
+        public bool IsReadOnly => false;
+
+        void ICollection<HorizontalAlignment>.Add(HorizontalAlignment item) => throw new NotSupportedException();
+
+        void ICollection<HorizontalAlignment>.Clear() => throw new NotSupportedException();
+
+        public bool Contains(HorizontalAlignment item)
+            => IndexOf(item) > -1;
+
+        public void CopyTo(HorizontalAlignment[] array, int arrayIndex)
+        {
+            for (int i = 0; i < Count && i + arrayIndex < array.Length; i++)
+                array[i + arrayIndex] = this[i];
+        }
+
+        public IEnumerator<HorizontalAlignment> GetEnumerator()
+        {
+            for (int i = 0; i < Count; i++)
+                yield return Get(i);
+        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        public int IndexOf(HorizontalAlignment item)
+        {
+            for (int i = 0; i < Count; i++)
+                if (Get(i) == item)
+                    return i;
+            return -1;
+        }
+
+        void IList<HorizontalAlignment>.Insert(int index, HorizontalAlignment item) => throw new NotSupportedException();
+
+        bool ICollection<HorizontalAlignment>.Remove(HorizontalAlignment item) => false;
+
+        void IList<HorizontalAlignment>.RemoveAt(int index) => throw new NotSupportedException();
+    }
+
 }

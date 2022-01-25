@@ -5,12 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:gxs="http://schemas.galador.net/xaml/spreadsheet"
         xmlns:local="clr-namespace:SimpleGrid"
-        xmlns:gme="clr-namespace:SimpleGrid.GridModelExtensions"
+        xmlns:gme="clr-namespace:Galador.WPF.ExcelGrid"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-        <gme:GridModelDataGrid x:Name="theGrid"/>
+        <StackPanel Orientation="Horizontal">
+        </StackPanel>
+        
+        <gme:ExcelDataGrid x:Name="theGrid" Grid.Row="1" />
+        
 
     </Grid>
 </Window>

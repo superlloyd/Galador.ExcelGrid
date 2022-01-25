@@ -5,20 +5,22 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
-namespace SimpleGrid.GridModelExtensions
+namespace Galador.WPF.ExcelGrid
 {
-    partial class GridModel
+    partial class ExcelModel
     {
         public void ToCsv(StringWriter writer)
         {
+            for (int i = 0; i < ColumnCount; i++)
+                writer.Write((int)Alignments[i]);
+            writer.WriteLine();
+
             var cw = new CsvWriter(writer);
-            foreach (var column in this.Columns)
-                cw.WriteField(column);
-            cw.NextRecord();
             foreach (var row in rows)
             {
-                for (int i = 0; i < Columns.Count; i++)
+                for (int i = 0; i < ColumnCount; i++)
                     cw.WriteField(row[i]);
                 cw.NextRecord();
             }
@@ -31,13 +33,13 @@ namespace SimpleGrid.GridModelExtensions
             return sb.ToString();
         }
 
-        public static GridModel FromCsv(StringReader reader)
+        public static ExcelModel FromCsv(StringReader reader)
         {
-            var model = new GridModel();
+            var model = new ExcelModel();
             model.InitializeFromCsv(reader, false);
             return model;
         }
-        public static GridModel FromCsv(string csv) => FromCsv(new StringReader(csv));
+        public static ExcelModel FromCsv(string csv) => FromCsv(new StringReader(csv));
 
         public void InitializeFromCsv(StringReader reader) => InitializeFromCsv(reader, true);
         public void InitializeFromCsv(string csv) => InitializeFromCsv(new StringReader(csv), true);
@@ -45,27 +47,23 @@ namespace SimpleGrid.GridModelExtensions
         private void InitializeFromCsv(StringReader reader, bool clear)
         {
             if (clear)
-            {
                 Clear();
-                Columns.Clear();
-            }
+
+            var line = reader.ReadLine()?.Trim();
+            if (line == null)
+                return;
+
+            ColumnCount = line.Length;
+
+            for (int i = 0; i < line.Length; i++)
+                Alignments[i] = (HorizontalAlignment)(line[i] - '0');
 
             var cr = new CsvReader(reader);
-            bool first = true;
             while (cr.Read())
             {
-                if (first)
-                {
-                    first = false;
-                    for (int i = 0; i < cr.FieldsCount; i++)
-                        this.Columns.Add(cr[i]);
-                }
-                else
-                {
-                    var row = this.AddRow();
-                    for (int i = 0; i < cr.FieldsCount && i < this.Columns.Count; i++)
-                        row[i] = cr[i];
-                }
+                var row = this.AddRow();
+                for (int i = 0; i < cr.FieldsCount && i < this.ColumnCount; i++)
+                    row.Set(i, cr[i]);
             }
         }
     }
