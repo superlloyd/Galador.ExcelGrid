@@ -20,10 +20,12 @@ namespace Galador.Document.Grid
         public new T this[int row, int col] => (T)base[row, col];
     }
 
+    /// <summary>A model that behave very much like a <seealso cref="List{Cell}"/></summary>
     public class CellGridModel : IList<CellGridModel.Row>, IList, INotifyCollectionChanged, INotifyPropertyChanged
     {
         readonly List<Row> rows = new List<Row>();
 
+        /// <summary>Create the <seealso cref="Cell"/> that populate this model</summary>
         protected virtual Cell CreateCell() => new Cell();
 
         public int ColumnCount

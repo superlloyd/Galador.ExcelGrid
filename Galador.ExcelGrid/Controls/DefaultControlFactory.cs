@@ -62,8 +62,10 @@ namespace Galador.ExcelGrid.Controls
 
         public FrameworkElement CreateDisplayControl(CellDescriptor d)
         {
-            foreach (var factory in otherFactories)
+            // loop backward to get latest registration first, assuming they are the most well targeted
+            for (int i = otherFactories.Count - 1; i >= 0; i--)
             {
+                var factory = otherFactories[i];
                 if (factory.Match(d))
                 {
                     var view = factory.CreateDisplayControl(d);
@@ -78,9 +80,13 @@ namespace Galador.ExcelGrid.Controls
 
         public FrameworkElement CreateEditControl(CellDescriptor d)
         {
-            foreach (var factory in otherFactories)
+            // loop backward to get latest registration first, assuming they are the most well targeted
+            for (int i = otherFactories.Count - 1; i >= 0; i--)
+            {
+                var factory = otherFactories[i];
                 if (factory.Match(d))
                     return factory.CreateEditControl(d);
+            }
 
             if (d.PropertyDefinition.IsReadOnly)
             {

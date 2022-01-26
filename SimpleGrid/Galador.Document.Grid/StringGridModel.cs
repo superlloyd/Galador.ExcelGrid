@@ -11,6 +11,7 @@ using System.Windows;
 
 namespace Galador.Document.Grid
 {
+    /// <summary>A model that behave very much like a <seealso cref="List{String[]}"/></summary>
     public partial class StringGridModel : IList<StringGridModel.Row>, IList, INotifyCollectionChanged, INotifyPropertyChanged
     {
         readonly List<Row> rows = new List<Row>();
