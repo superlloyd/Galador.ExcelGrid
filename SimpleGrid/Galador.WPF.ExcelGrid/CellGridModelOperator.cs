@@ -109,7 +109,7 @@ namespace Galador.WPF.ExcelGrid
         private ColumnDefinition CreateColumnAt(int index)
         {
             var model = Model;
-            var header = StringColumnPropertyDescriptor.GetColumnHeader(index);
+            var header = CellColumnPropertyDescriptor.GetColumnHeader(index);
             var cd = new ColumnDefinition
             {
                 Header = header,
