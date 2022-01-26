@@ -42,7 +42,7 @@ namespace Galador.Document.Grid
             public override PropertyDescriptorCollection GetProperties() => Columns;
         }
     }
-    internal class CellColumnPropertyDescriptor : PropertyDescriptor
+    public class CellColumnPropertyDescriptor : PropertyDescriptor
     {
         readonly string name;
         private CellColumnPropertyDescriptor(int column)
