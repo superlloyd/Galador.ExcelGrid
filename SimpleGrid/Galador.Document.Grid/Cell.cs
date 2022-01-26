@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Galador.Document.Grid
 {
-    public class Cell : INotifyPropertyChanged
+    public class Cell : INotifyPropertyChanged, IComparable<Cell>, IComparable
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -22,6 +22,16 @@ namespace Galador.Document.Grid
                 foreach (var name in names)
                     e(this, new PropertyChangedEventArgs(name));
         }
+
+        public virtual int CompareTo(Cell? other)
+        {
+            if (other is null)
+                return 1;
+            return string.Compare(Text, other.Text, true);
+        }
+
+        public int CompareTo(object? obj)
+            => CompareTo(obj as Cell);
 
         public virtual string? Text
         {
