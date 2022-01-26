@@ -9,7 +9,7 @@ using System.Windows;
 
 namespace Galador.Document.Grid
 {
-    partial class ExcelModel
+    partial class StringGridModel
     {
         public void ToCsv(StringWriter writer)
         {
@@ -29,13 +29,13 @@ namespace Galador.Document.Grid
             return sb.ToString();
         }
 
-        public static ExcelModel FromCsv(StringReader reader)
+        public static StringGridModel FromCsv(StringReader reader)
         {
-            var model = new ExcelModel();
+            var model = new StringGridModel();
             model.InitializeFromCsv(reader, false);
             return model;
         }
-        public static ExcelModel FromCsv(string csv) => FromCsv(new StringReader(csv));
+        public static StringGridModel FromCsv(string csv) => FromCsv(new StringReader(csv));
 
         public void InitializeFromCsv(StringReader reader) => InitializeFromCsv(reader, true);
         public void InitializeFromCsv(string csv) => InitializeFromCsv(new StringReader(csv), true);

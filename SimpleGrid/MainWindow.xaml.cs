@@ -31,9 +31,9 @@ namespace SimpleGrid
             theGrid.ItemsSource = model;
             this.DataContext = model;
         }
-        ExcelModel CreateModel()
+        StringGridModel CreateModel()
         {
-            var model = new ExcelModel();
+            var model = new StringGridModel();
             model.ColumnCount = 3;
             for (int i = 0; i < 6; i++)
             {
@@ -47,11 +47,11 @@ namespace SimpleGrid
 
         private void DoSaveCheck(object sender, RoutedEventArgs e)
         {
-            var model = DataContext as ExcelModel;
+            var model = DataContext as StringGridModel;
             var s1 = model!.ToCsv();
-            var model2 = ExcelModel.FromCsv(s1);
+            var model2 = StringGridModel.FromCsv(s1);
             var s2 = model2.ToCsv();
-            var model3 = new ExcelModel();
+            var model3 = new StringGridModel();
             model3.InitializeFromCsv(s2);
             Debug.Assert(s1 == s2);
             Debug.Assert(model.RowCount == model2.RowCount);

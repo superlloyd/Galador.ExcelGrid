@@ -321,8 +321,6 @@ namespace Galador.ExcelGrid.Operators
             var d = new CellDescriptor
             {
                 PropertyDefinition = pd,
-                Item = this.GetItem(cell),
-                Descriptor = this.GetPropertyDescriptor(pd, null, cell),
                 PropertyType = this.GetPropertyType(cell),
                 BindingPath = this.GetBindingPath(cell),
                 BindingSource = this.GetDataContext(cell)

@@ -14,7 +14,7 @@ namespace Galador.WPF.ExcelGrid
         protected override IDataGridOperator CreateOperator()
         {
             var list = this.ItemsSource;
-            if (list is ExcelModel)
+            if (list is StringGridModel)
                 return new ExcelModelOperator(this);
 
             return base.CreateOperator();

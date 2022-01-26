@@ -43,15 +43,6 @@ namespace Galador.ExcelGrid
         /// <param name="cell">The cell.</param>
         /// <returns>A cell descriptor.</returns>
         CellDescriptor CreateCellDescriptor(CellRef cell);
- 
-        /// <summary>
-        /// Gets the binding path for the specified cell.
-        /// </summary>
-        /// <param name="cell">The cell.</param>
-        /// <returns>
-        /// The binding path
-        /// </returns>
-        string GetBindingPath(CellRef cell);
 
         /// <summary>
         /// Gets the value in the specified cell.

@@ -1136,9 +1136,7 @@ namespace Galador.ExcelGrid
         /// </value>
         public ICollectionView CollectionView { get; private set; }
 
-        /// <summary>
-        /// Gets a value indicating whether to use rows for the items.
-        /// </summary>
+        /// <summary>Gets a value indicating whether to use rows for the items.</summary>
         /// <value><c>true</c> if the items are in rows; otherwise, <c>false</c> .</value>
         public bool ItemsInRows => !this.ItemsInColumns;
 
@@ -1153,9 +1151,7 @@ namespace Galador.ExcelGrid
         /// <value>The number of rows.</value>
         public int Rows => this.sheetGrid != null ? this.sheetGrid.RowDefinitions.Count - 1 : 0;
 
-        /// <summary>
-        /// Gets a value indicating whether to use columns for the items.
-        /// </summary>
+        /// <summary>Gets a value indicating whether to use columns for the items.</summary>
         public bool ItemsInColumns { get; private set; }
 
         /// <summary>

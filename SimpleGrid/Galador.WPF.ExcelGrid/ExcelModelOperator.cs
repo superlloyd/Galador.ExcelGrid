@@ -25,11 +25,10 @@ namespace Galador.WPF.ExcelGrid
         public GridLength DefaultColumnWidth { get; set; } = new GridLength(1, GridUnitType.Star);
         public HorizontalAlignment DefaultHorizontalAlignment { get; set; } = HorizontalAlignment.Left;
 
-        ExcelModel? Model => this.Owner.ItemsSource as ExcelModel;
+        StringGridModel? Model => this.Owner.ItemsSource as StringGridModel;
 
         public int GetColumnCount() => Model?.ColumnCount ?? 0;
         public int GetRowCount() => Model?.RowCount ?? 0;
-        public string GetBindingPath(CellRef cell) => $"[{cell.Column}]";
         public object? GetDataContext(CellRef cell)
         {
             var model = Model;
@@ -90,10 +89,8 @@ namespace Galador.WPF.ExcelGrid
             var d = new CellDescriptor
             {
                 PropertyDefinition = this.Owner.ColumnDefinitions[cell.Column],
-                Item = this.GetItem(cell),
-                Descriptor = ColumnDescriptor.GetColumn(cell.Column),
                 PropertyType = typeof(string),
-                BindingPath = this.GetBindingPath(cell),
+                BindingPath = $"[{cell.Column}]",
                 BindingSource = this.GetDataContext(cell)
             };
             return d;
@@ -114,7 +111,7 @@ namespace Galador.WPF.ExcelGrid
         private ColumnDefinition CreateColumnAt(int index)
         {
             var model = Model;
-            var header = ColumnDescriptor.GetColumnHeader(index);
+            var header = StringColumnPropertyDescriptor.GetColumnHeader(index);
             var cd = new ColumnDefinition
             {
                 Header = header,

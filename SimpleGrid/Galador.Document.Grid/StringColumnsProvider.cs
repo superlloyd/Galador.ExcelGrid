@@ -7,10 +7,45 @@ using System.Threading.Tasks;
 
 namespace Galador.Document.Grid
 {
-    internal class ColumnDescriptor : PropertyDescriptor
+    internal class StringColumnsProvider : TypeDescriptionProvider
+    {
+        static readonly Dictionary<int, StringColumnsPropertyDescriptor> rowDescriptors = new();
+
+        public override ICustomTypeDescriptor GetExtendedTypeDescriptor(object instance)
+        {
+            if (instance is StringGridModel.Row row)
+            {
+                if (!rowDescriptors.TryGetValue(row.Grid.ColumnCount, out var result))
+                {
+                    result = new StringColumnsPropertyDescriptor(row.Grid.ColumnCount);
+                    rowDescriptors[row.Grid.ColumnCount] = result;
+                }
+                return result;
+            }
+            return base.GetExtendedTypeDescriptor(instance);
+        }
+
+        private class StringColumnsPropertyDescriptor : CustomTypeDescriptor
+        {
+            public StringColumnsPropertyDescriptor(int columnCount)
+            {
+                ColumnCount = columnCount;
+
+                var columns = new PropertyDescriptorCollection(null);
+                for (int i = 0; i < columnCount; i++)
+                    columns.Add(StringColumnPropertyDescriptor.GetColumn(i));
+                Columns = columns;
+            }
+            public int ColumnCount { get; }
+            public PropertyDescriptorCollection Columns { get; }
+
+            public override PropertyDescriptorCollection GetProperties() => Columns;
+        }
+    }
+    internal class StringColumnPropertyDescriptor : PropertyDescriptor
     {
         readonly string name;
-        private ColumnDescriptor(int column)
+        private StringColumnPropertyDescriptor(int column)
             : base(GetColumnHeader(column), Array.Empty<Attribute>())
         {
             Column = column;
@@ -26,21 +61,21 @@ namespace Galador.Document.Grid
         }
         public int Column { get; }
 
-        public static ColumnDescriptor GetColumn(int index)
+        public static StringColumnPropertyDescriptor GetColumn(int index)
         {
             if (!_columnDescriptors.TryGetValue(index, out var descriptor))
             {
-                descriptor = new ColumnDescriptor(index);
+                descriptor = new StringColumnPropertyDescriptor(index);
                 _columnDescriptors[index] = descriptor;
             }
             return descriptor;
         }
-        static Dictionary<int, ColumnDescriptor> _columnDescriptors = new();
+        static Dictionary<int, StringColumnPropertyDescriptor> _columnDescriptors = new();
 
         public override string Name => name;
         public override string DisplayName => Name;
 
-        public override Type ComponentType => typeof(ExcelModel.Row);
+        public override Type ComponentType => typeof(StringGridModel.Row);
 
         public override bool IsReadOnly => false;
 
@@ -52,7 +87,7 @@ namespace Galador.Document.Grid
         {
             if (component == null)
                 throw new ArgumentNullException(nameof(component));
-            var row = (ExcelModel.Row)component;
+            var row = (StringGridModel.Row)component;
             return row[Column];
         }
 
@@ -60,7 +95,7 @@ namespace Galador.Document.Grid
         {
             if (component == null)
                 throw new ArgumentNullException(nameof(component));
-            var row = (ExcelModel.Row)component;
+            var row = (StringGridModel.Row)component;
             row[Column] = "";
         }
 
@@ -68,7 +103,7 @@ namespace Galador.Document.Grid
         {
             if (component == null)
                 throw new ArgumentNullException(nameof(component));
-            var row = (ExcelModel.Row)component;
+            var row = (StringGridModel.Row)component;
             row[Column] = (string)(value ?? "");
         }
 

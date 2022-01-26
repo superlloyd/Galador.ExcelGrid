@@ -11,9 +11,20 @@ using System.Windows;
 
 namespace Galador.Document.Grid
 {
-    public partial class ExcelModel : IList<ExcelModel.Row>, IList, INotifyCollectionChanged, INotifyPropertyChanged
+    public class CellModel<T> : CellGridModel
+        where T : Cell, new()
+    {
+        protected override Cell CreateCell()
+            => new T();
+
+        public new T this[int row, int col] => (T)base[row, col];
+    }
+
+    public abstract class CellGridModel : IList<CellGridModel.Row>, IList, INotifyCollectionChanged, INotifyPropertyChanged
     {
         readonly List<Row> rows = new List<Row>();
+
+        protected abstract Cell CreateCell();
 
         public int ColumnCount
         {
@@ -27,20 +38,18 @@ namespace Galador.Document.Grid
                 if (value == ColumnCount)
                     return;
                 columnCount = value;
+                foreach (var row in rows)
+                    row.EnsureSize();
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ColumnCount)));
             }
         }
-        int columnCount = 26;
+        int columnCount = 0;
 
         public int RowCount => rows.Count;
         int ICollection<Row>.Count => RowCount;
         int ICollection.Count => RowCount;
 
-        public string this[int row, int col]
-        {
-            get => rows[row][col];
-            set => rows[row][col] = value;
-        }
+        public Cell this[int row, int col] => rows[row][col];
 
         Row IList<Row>.this[int index]
         {
@@ -183,52 +192,56 @@ namespace Galador.Document.Grid
                 row.DeleteColumns(index, count);
         }
 
-        [TypeDescriptionProvider(typeof(RowColumnsProvider))]
-        public class Row : IList<string>, IList, INotifyCollectionChanged, INotifyPropertyChanged
+        [TypeDescriptionProvider(typeof(CellColumnsProvider))]
+        public class Row : IList<Cell>, IList, INotifyPropertyChanged
         {
-            readonly ExcelModel grid;
-            readonly Dictionary<int, string> row = new();
+            readonly CellGridModel grid;
+            Cell[]? row;
 
-            internal Row(ExcelModel grid)
+            internal Row(CellGridModel grid)
             {
                 this.grid = grid;
             }
-            public ExcelModel Grid => grid;
+            public CellGridModel Grid => grid;
 
-            public event NotifyCollectionChangedEventHandler? CollectionChanged;
             public event PropertyChangedEventHandler? PropertyChanged;
 
-            public string this[int index]
+            Cell IList<Cell>.this[int index]
             {
-                get => Get(index);
-                set
+                get => this[index];
+                set => throw new NotSupportedException();
+            }
+            public Cell this[int index] => Get(index, true)!;
+            internal void Set(int index, Cell? value)
+            {
+                if (row is null)
                 {
-                    if (index < 0 || index >= Count)
-                        throw new ArgumentOutOfRangeException(nameof(index));
-
-                    var old = this[index];
-                    if ((value ?? "") == old)
+                    if (value is null)
                         return;
-
-                    Set(index, value);
-                    CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, value, old, index));
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
+                    row = new Cell[Grid.ColumnCount];
                 }
+                row[index] = value!; 
             }
-            internal void Set(int index, string? value)
+            internal Cell? Get(int index, bool instantiate)
             {
-                if (string.IsNullOrEmpty(value))
+                if (row is null || row[index] is null)
                 {
-                    row.Remove(index);
-                    return;
+                    if (instantiate)
+                    {
+                        if (row == null)
+                            row = new Cell[Grid.ColumnCount];
+                        var result = Grid.CreateCell() ?? throw new InvalidOperationException("Can't instantiate cell");
+                        row[index] = result;
+                        return result;
+                    }
+                    return null;
                 }
-                row[index] = value;
+                return row[index];
             }
-            internal string Get(int index) => row.TryGetValue(index, out var result) ? result : "";
 
             public int Count => grid.ColumnCount;
 
-            bool ICollection<string>.IsReadOnly => false;
+            bool ICollection<Cell>.IsReadOnly => false;
 
             bool IList.IsFixedSize => true;
 
@@ -241,34 +254,37 @@ namespace Galador.Document.Grid
             object? IList.this[int index]
             {
                 get => this[index];
-                set => this[index] = value?.ToString() ?? "";
+                set => throw new NotSupportedException();
             }
 
-            void ICollection<string>.Add(string item) => throw new NotSupportedException();
+            void ICollection<Cell>.Add(Cell? item) => throw new NotSupportedException();
 
             public void Clear()
             {
                 for (int i = 0; i < Count; i++)
-                    this[i] = string.Empty;
+                    Set(i, null);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
             }
 
-            public bool Contains(string item) => IndexOf(item) >= 0;
+            public bool Contains(Cell? item) => IndexOf(item) >= 0;
 
-            public void CopyTo(string[] array, int arrayIndex)
+            public void CopyTo(Cell[] array, int arrayIndex)
             {
                 for (int i = 0; i < Count && i + arrayIndex < array.Length; i++)
                     array[i + arrayIndex] = this[i];
             }
 
-            public IEnumerator<string> GetEnumerator()
+            public IEnumerator<Cell> GetEnumerator()
             {
                 for (int i = 0; i < Count; i++)
                     yield return this[i];
             }
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-            public int IndexOf(string item)
+            public int IndexOf(Cell? item)
             {
+                if (item is null)
+                    return -1;
                 for (int i = 0; i < Count; i++)
                 {
                     if (item == this[i])
@@ -277,17 +293,17 @@ namespace Galador.Document.Grid
                 return -1;
             }
 
-            void IList<string>.Insert(int index, string item) => throw new NotSupportedException();
+            void IList<Cell>.Insert(int index, Cell item) => throw new NotSupportedException();
 
-            bool ICollection<string>.Remove(string item) => throw new NotSupportedException();
+            bool ICollection<Cell>.Remove(Cell item) => throw new NotSupportedException();
 
-            void IList<string>.RemoveAt(int index) => throw new NotSupportedException();
+            void IList<Cell>.RemoveAt(int index) => throw new NotSupportedException();
 
             int IList.Add(object? value) => throw new NotSupportedException();
 
-            bool IList.Contains(object? value) => value is string s && Contains(s);
+            bool IList.Contains(object? value) => value is Cell s && Contains(s);
 
-            int IList.IndexOf(object? value) => value is string s ? IndexOf(s) : -1;
+            int IList.IndexOf(object? value) => value is Cell s ? IndexOf(s) : -1;
 
             void IList.Insert(int index, object? value) => throw new NotSupportedException();
 
@@ -304,26 +320,56 @@ namespace Galador.Document.Grid
             }
             internal void InsertColumns(int index, int count)
             {
-                var N = Grid.ColumnCount;
-                for (int i = N - 1; i >= index; i--)
+                if (row is null)
+                    return;
+
+                var newrow = new Cell[Grid.ColumnCount];
+                for (int i = 0; i < newrow.Length; i++)
                 {
-                    if (i > index + count)
+                    if (i < index)
                     {
-                        Set(i, Get(i - count));
+                        newrow[i] = row[i];
+                    }
+                    else if (i < index + count)
+                    {
+                        // nothing
                     }
                     else
                     {
-                        Set(i, null);
+                        newrow[i] = row[i - count];
                     }
                 }
-                PropertyChanged?.Invoke(index, new PropertyChangedEventArgs(null));
+                row = newrow;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
             }
             internal void DeleteColumns(int index, int count)
             {
-                var N = Grid.ColumnCount + count;
-                for (int i = index; i < N; i++)
-                    Set(i, i < N - count ? Get(i + count) : null);
-                PropertyChanged?.Invoke(index, new PropertyChangedEventArgs(null));
+                if (row is null)
+                    return;
+
+                var newrow = new Cell[Grid.ColumnCount];
+                for (int i = 0; i < newrow.Length; i++)
+                {
+                    if (i < index)
+                    {
+                        newrow[i] = row[i];
+                    }
+                    else
+                    {
+                        newrow[i] = row[i + count];
+                    }
+                }
+                row = newrow;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
+            }
+            internal void EnsureSize()
+            {
+                if (row is null)
+                    return;
+                var newrow = new Cell[Grid.ColumnCount];
+                for (int i = 0; i < newrow.Length && i < row.Length; i++)
+                    newrow[i] = row[i];
+                row = newrow;
             }
         }
     }

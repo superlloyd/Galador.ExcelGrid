@@ -44,7 +44,11 @@ namespace Galador.ExcelGrid.Helpers
                     if (vindex++ == viewIndex)
                         return source.IndexOf(vitem);
                 }
+#if DEBUG
+                throw new InvalidOperationException("The collection view is probably out of sync. (GetCollectionViewIndex)");
+#else
                 return -1;
+#endif
             }
         }
 
@@ -75,7 +79,11 @@ namespace Galador.ExcelGrid.Helpers
                     return result;
                 result++;
             }
+#if DEBUG
+            throw new InvalidOperationException("The collection view is probably out of sync. (GetCollectionViewIndex)");
+#else
             return -1;
+#endif
         }
     }
 }
