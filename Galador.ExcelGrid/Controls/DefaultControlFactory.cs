@@ -49,14 +49,39 @@ namespace Galador.ExcelGrid.Controls
             return null;
         }
 
+        public void RegisterFactory(IControlFactory factory)
+        {
+            if (factory == null || otherFactories.Contains(factory))
+                return;
+            otherFactories.Add(factory);
+        }
+        readonly List<IControlFactory> otherFactories = new();
+
+        public bool Match(CellDescriptor descriptor)
+            => true;
+
         public FrameworkElement CreateDisplayControl(CellDescriptor d)
         {
+            foreach (var factory in otherFactories)
+            {
+                if (factory.Match(d))
+                {
+                    var view = factory.CreateDisplayControl(d);
+                    if (view != null)
+                        return view;
+                }
+            }
+
             var element = this.CreateDisplayControlOverride(d);
             return element;
         }
 
         public FrameworkElement CreateEditControl(CellDescriptor d)
         {
+            foreach (var factory in otherFactories)
+                if (factory.Match(d))
+                    return factory.CreateEditControl(d);
+
             if (d.PropertyDefinition.IsReadOnly)
             {
                 return null;
@@ -364,7 +389,7 @@ namespace Galador.ExcelGrid.Controls
         /// </returns>
         protected virtual FrameworkElement CreateTextBlockControl(CellDescriptor d)
         {
-            var c = new TextBlockEx
+            var textBlock = new TextBlockEx
             {
                 HorizontalAlignment = d.PropertyDefinition.HorizontalAlignment,
                 VerticalAlignment = VerticalAlignment.Center,
@@ -379,10 +404,10 @@ namespace Galador.ExcelGrid.Controls
                     binding.Path.Path += "." + d.PropertyDefinition.DisplayMemberPath;
             }
 
-            c.SetBinding(TextBlock.TextProperty, binding);
-            this.SetIsEnabledBinding(d, c);
+            textBlock.SetBinding(TextBlock.TextProperty, binding);
+            this.SetIsEnabledBinding(d, textBlock);
 
-            return this.CreateContainer(d, c);
+            return this.CreateContainer(d, textBlock);
         }
 
         /// <summary>

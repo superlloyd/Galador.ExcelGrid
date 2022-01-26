@@ -17,7 +17,7 @@ namespace Galador.ExcelGrid.Helpers
         {
             IList source = grid.ItemsSource;
             ICollectionView view = grid.CollectionView;
-            if (view == null || source == null || viewIndex == 1 || viewIndex == source.Count)
+            if (view == null || source == null || viewIndex == -1 || viewIndex == source.Count)
                 return viewIndex;
 
             // if not using custom sort, and not sorting

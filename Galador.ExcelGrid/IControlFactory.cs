@@ -14,6 +14,7 @@ namespace Galador.ExcelGrid
 
     public interface IControlFactory
     {
+        bool Match(CellDescriptor descriptor);
         FrameworkElement CreateDisplayControl(CellDescriptor d);
         FrameworkElement CreateEditControl(CellDescriptor d);
     }

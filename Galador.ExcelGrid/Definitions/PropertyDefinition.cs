@@ -19,7 +19,7 @@ namespace Galador.ExcelGrid.Definitions
     /// </summary>
     public abstract class PropertyDefinition
     {
-        // use by grid
+        // used by grid (kind 
         public string FormatString { get; set; }
         public object Header { get; set; }
         public object Tooltip { get; set; }
@@ -27,11 +27,10 @@ namespace Galador.ExcelGrid.Definitions
         public string PropertyName { get; set; }
         public bool CanSort { get; set; } = true;
 
-        // use by factory
+        // used by factory
         public IValueConverter Converter { get; set; }
         public CultureInfo ConverterCulture { get; set; }
         public object ConverterParameter { get; set; }
-
         public bool IsEditable { get; set; }
         public bool IsReadOnly { get; set; }
         public IEnumerable ItemsSource { get; set; }

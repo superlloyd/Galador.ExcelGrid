@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Galador.Document.Grid
 {
@@ -45,5 +46,18 @@ namespace Galador.Document.Grid
             }
         }
         string? mText;
+
+        public HorizontalAlignment HorizontalAlignment
+        {
+            get => mHorizontalAlignment;
+            set
+            {
+                if (value == HorizontalAlignment)
+                    return;
+                mHorizontalAlignment = value;
+                OnPropertyChanged();
+            }
+        }
+        HorizontalAlignment mHorizontalAlignment = HorizontalAlignment.Left;
     }
 }

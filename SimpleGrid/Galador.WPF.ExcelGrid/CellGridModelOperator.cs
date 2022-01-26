@@ -14,28 +14,19 @@ using System.Windows;
 
 namespace Galador.WPF.ExcelGrid
 {
-    internal class ExcelModelOperator : IDataGridOperator
+    internal class CellGridModelOperator : IDataGridOperator
     {
-        public ExcelModelOperator(DataGrid owner)
+        public CellGridModelOperator(DataGrid owner)
         {
             Owner = owner;
         }
         public DataGrid Owner { get; }
+        CellGridModel? Model => this.Owner.ItemsSource as CellGridModel;
 
         public GridLength DefaultColumnWidth { get; set; } = new GridLength(1, GridUnitType.Star);
-        public HorizontalAlignment DefaultHorizontalAlignment { get; set; } = HorizontalAlignment.Left;
-
-        StringGridModel? Model => this.Owner.ItemsSource as StringGridModel;
 
         public int GetColumnCount() => Model?.ColumnCount ?? 0;
         public int GetRowCount() => Model?.RowCount ?? 0;
-        public object? GetDataContext(CellRef cell)
-        {
-            var model = Model;
-            if (model == null || cell.Row < 0 || cell.Row >= model.RowCount)
-                return null;
-            return model[Owner.FindSourceIndex(cell.Row)];
-        }
 
         public bool TrySetCellValue(CellRef cell, object value)
         {
@@ -51,7 +42,7 @@ namespace Galador.WPF.ExcelGrid
             if (cell.Column < 0 || cell.Column >= model.RowCount)
                 return false;
 
-            model[Owner.FindSourceIndex(cell.Row), cell.Column] = (string)(value ?? "");
+            model[Owner.FindSourceIndex(cell.Row), cell.Column].Text = (string)(value ?? "");
             return true;
         }
         public object? GetCellValue(CellRef cell)
@@ -68,7 +59,7 @@ namespace Galador.WPF.ExcelGrid
             return model[Owner.FindSourceIndex(cell.Row), cell.Column];
         }
 
-        public Type GetPropertyType(CellRef cell) => typeof(string);
+        public Type GetPropertyType(CellRef cell) => typeof(Cell);
         public object? GetItem(CellRef cell) => GetCellValue(cell);
 
         public void UpdatePropertyDefinitions()
@@ -86,14 +77,21 @@ namespace Galador.WPF.ExcelGrid
 
         public CellDescriptor CreateCellDescriptor(CellRef cell)
         {
-            var d = new CellDescriptor
+            var column = this.Owner.ColumnDefinitions[cell.Column];
+
+            var model = Model;
+            if (model == null || cell.Row < 0 || cell.Row >= model.RowCount)
+                return new CellDescriptor { PropertyDefinition = column };
+
+            var row = model[Owner.FindSourceIndex(cell.Row)];
+            return new CellDescriptor
             {
-                PropertyDefinition = this.Owner.ColumnDefinitions[cell.Column],
-                PropertyType = typeof(string),
+                PropertyDefinition = column,
+                Item = row[cell.Column],
+                PropertyType = typeof(Cell),
                 BindingPath = $"[{cell.Column}]",
-                BindingSource = this.GetDataContext(cell)
+                BindingSource = row
             };
-            return d;
         }
 
         public bool CanSort(int index) => true;
@@ -116,8 +114,8 @@ namespace Galador.WPF.ExcelGrid
             {
                 Header = header,
                 PropertyName = header,
-                HorizontalAlignment = DefaultHorizontalAlignment,
-                Width = this.DefaultColumnWidth
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Width = this.DefaultColumnWidth,
             };
             return cd;
         }

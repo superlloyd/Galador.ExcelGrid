@@ -27,11 +27,26 @@ namespace SimpleGrid
         {
             InitializeComponent();
 
-            var model = CreateModel();
+            //var model = CreateStringModel();
+            var model = CreateCellModel();
             theGrid.ItemsSource = model;
             this.DataContext = model;
         }
-        StringGridModel CreateModel()
+
+        CellGridModel CreateCellModel()
+        {
+            var model = new CellGridModel();
+            model.ColumnCount = 3;
+            for (int i = 0; i < 6; i++)
+            {
+                var r = model.AddRow();
+                r[0].Text = i + " One";
+                r[1].Text = i + " Two";
+                r[2].Text = i + " Three";
+            }
+            return model;
+        }
+        StringGridModel CreateStringModel()
         {
             var model = new StringGridModel();
             model.ColumnCount = 3;
@@ -48,6 +63,8 @@ namespace SimpleGrid
         private void DoSaveCheck(object sender, RoutedEventArgs e)
         {
             var model = DataContext as StringGridModel;
+            if (model is null)
+                return;
             var s1 = model!.ToCsv();
             var model2 = StringGridModel.FromCsv(s1);
             var s2 = model2.ToCsv();

@@ -11,6 +11,7 @@
     public class CellDescriptor
     {
         public Definitions.PropertyDefinition PropertyDefinition { get; set; }
+        public object Item { get; set; }
         public Type PropertyType { get; set; }
         public string BindingPath { get; set; }
         public object BindingSource { get; set; }

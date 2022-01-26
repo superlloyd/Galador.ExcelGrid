@@ -20,11 +20,11 @@ namespace Galador.Document.Grid
         public new T this[int row, int col] => (T)base[row, col];
     }
 
-    public abstract class CellGridModel : IList<CellGridModel.Row>, IList, INotifyCollectionChanged, INotifyPropertyChanged
+    public class CellGridModel : IList<CellGridModel.Row>, IList, INotifyCollectionChanged, INotifyPropertyChanged
     {
         readonly List<Row> rows = new List<Row>();
 
-        protected abstract Cell CreateCell();
+        protected virtual Cell CreateCell() => new Cell();
 
         public int ColumnCount
         {
