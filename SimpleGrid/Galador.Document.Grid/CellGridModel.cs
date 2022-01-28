@@ -47,7 +47,36 @@ namespace Galador.Document.Grid
         }
         int columnCount = 0;
 
-        public int RowCount => rows.Count;
+        public int RowCount
+        {
+            get => rows.Count;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(value));
+                if (value > 64_000)
+                    value = 64_000;
+
+                if (value < rows.Count)
+                {
+                    var oldrows = new Row[rows.Count - value];
+                    for (int i = 0; i < oldrows.Length; i++)
+                        oldrows[i] = rows[i + value];
+                    rows.RemoveRange(value, oldrows.Length);
+                    CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, oldrows, value));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RowCount)));
+                }
+                else if (value > rows.Count)
+                {
+                    var newrows = new Row[value - rows.Count];
+                    for (int i = 0; i < newrows.Length; i++)
+                        newrows[i] = new Row(this);
+                    rows.AddRange(newrows);
+                    CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, newrows, rows.Count - newrows.Length));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RowCount)));
+                }
+            }
+        }
         int ICollection<Row>.Count => RowCount;
         int ICollection.Count => RowCount;
 
