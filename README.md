@@ -25,7 +25,7 @@ to support 2 additionals models types that act like `string[,]` and `Cell[,]`.
 - `Galador.Document.Grid.StringGridModel`
 - `Galador.Document.Grid.CellGridModel`
 
-Had to update the grid slightly. But they need the new 
+Had to update the grid slightly, hence they need the new 
 `Galador.WPF.ExcelGrid.ExcelDataGrid` to be displayed succesfully.
 Each `Cell` can now have their own renderer and editors by using update the 
 `Galador.WPF.ExcelGrid.CellViewFactory`.
