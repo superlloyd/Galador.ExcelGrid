@@ -11,16 +11,12 @@ Aiming for a simple, self contained spreadsheet control looking like Excel.
 I also added their original WPF samples (*ExcelGridDemo*).
 And added a sample to experiment with the data model I am aiming for: *SimpleGrid*.
 
-**Remark** Of note I cut most of their controls (but the DataGid), hence the default color editor is no longer editing colors.
-I also simplify the grid code enough that one cannot just use one instead of the other.
-
-**Remark** maybe one day add formula with Lua?
-(https://www.moonsharp.org/)
-
 
 **About SimpleGrid sample and other changes**
 Also made the following changes to the original `DataGrid` (from https://github.com/PropertyTools/PropertyTools) 
 
+- Removed some steps between `IDataGridOperator` to rendering and edit control instantiation
+- Removed the build color edit support (since I didn't copy across the color picker)
 - Fixed some resize (column/rows) bugs
 - Added IsReadOnly property
 - Added full support to 2 additionals models types that act like `string[,]` and `Cell[,]`.
@@ -32,3 +28,7 @@ Also made the following changes to the original `DataGrid` (from https://github.
 
 *Remark* One can also use custmo subclass of `Cell` for the `CellGridModel` and register an `IControlFactory`
 to render them.
+
+*Remark* maybe one day add formula to Cells with Lua?
+(https://www.moonsharp.org/)
+
