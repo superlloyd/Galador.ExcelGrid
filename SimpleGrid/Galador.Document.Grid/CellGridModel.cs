@@ -20,7 +20,7 @@ namespace Galador.Document.Grid
         public new T this[int row, int col] => (T)base[row, col];
     }
 
-    /// <summary>A model that behave very much like a <seealso cref="List{Cell}"/></summary>
+    /// <summary>A model that behave very much like a <seealso cref="List{Cell[]}"/></summary>
     public class CellGridModel : IList<CellGridModel.Row>, IList, INotifyCollectionChanged, INotifyPropertyChanged, ICloneable, IEquatable<CellGridModel>
     {
         List<Row> rows = new List<Row>();
