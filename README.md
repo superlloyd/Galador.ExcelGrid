@@ -19,13 +19,16 @@ I also simplify the grid code enough that one cannot just use one instead of the
 
 
 **About SimpleGrid sample and other changes**
+Also made the following changes to the original `DataGrid` (from https://github.com/PropertyTools/PropertyTools) 
 
-I reworked the original `DataGrid` (from https://github.com/PropertyTools/PropertyTools) 
-to support 2 additionals models types that act like `string[,]` and `Cell[,]`.
-- `Galador.Document.Grid.StringGridModel`
-- `Galador.Document.Grid.CellGridModel`
+- Fixed some resize (column/rows) bugs
+- Added IsReadOnly property
+- Added full support to 2 additionals models types that act like `string[,]` and `Cell[,]`.
+  - `Galador.Document.Grid.StringGridModel`
+  - `Galador.Document.Grid.CellGridModel`
 
-Had to update the grid slightly, hence they need the new 
-`Galador.WPF.ExcelGrid.ExcelDataGrid` to be displayed succesfully.
-Each `Cell` can now have their own renderer and editors by using update the 
-`Galador.WPF.ExcelGrid.CellViewFactory`.
+*Remark* to succesfully use those 2 new models, one need to use the new
+`Galador.WPF.ExcelGrid.ExcelDataGrid` that use the appropriate `IDataGridOperator` and `IControlFactory`.
+
+*Remark* One can also use custmo subclass of `Cell` for the `CellGridModel` and register an `IControlFactory`
+to render them.
