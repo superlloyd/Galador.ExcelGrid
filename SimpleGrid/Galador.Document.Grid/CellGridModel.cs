@@ -21,9 +21,9 @@ namespace Galador.Document.Grid
     }
 
     /// <summary>A model that behave very much like a <seealso cref="List{Cell}"/></summary>
-    public class CellGridModel : IList<CellGridModel.Row>, IList, INotifyCollectionChanged, INotifyPropertyChanged
+    public class CellGridModel : IList<CellGridModel.Row>, IList, INotifyCollectionChanged, INotifyPropertyChanged, ICloneable, IEquatable<CellGridModel>
     {
-        readonly List<Row> rows = new List<Row>();
+        List<Row> rows = new List<Row>();
 
         /// <summary>Create the <seealso cref="Cell"/> that populate this model</summary>
         protected virtual Cell CreateCell() => new Cell();
@@ -223,6 +223,39 @@ namespace Galador.Document.Grid
                 row.DeleteColumns(index, count);
         }
 
+        object ICloneable.Clone() => Clone();
+        public virtual CellGridModel Clone()
+        {
+            var result = (CellGridModel)base.MemberwiseClone();
+            result.PropertyChanged = null;
+            result.CollectionChanged = null;
+            result.rows = new List<Row>(this.rows.Capacity);
+            foreach (var item in this.rows)
+                result.rows.Add(item.Clone(result));
+            return result;
+        }
+
+        public virtual bool Equals(CellGridModel? model)
+        {
+            if (model is null)
+                return false;
+            if (model.RowCount != RowCount || model.ColumnCount != ColumnCount)
+                return false;
+            for (int i = 0; i < RowCount; i++)
+                if (!Equals(this[i], model[i]))
+                    return false;
+            return true;
+        }
+        public override bool Equals(object? obj) => Equals(obj as CellGridModel);
+        public override int GetHashCode()
+        {
+            int result = 0;
+            foreach (var row in this)
+                result ^= row.GetHashCode();
+            return result;
+        }
+
+
         [TypeDescriptionProvider(typeof(CellColumnsProvider))]
         public class Row : IList<Cell>, IList, INotifyPropertyChanged
         {
@@ -234,6 +267,50 @@ namespace Galador.Document.Grid
                 this.grid = grid;
             }
             public CellGridModel Grid => grid;
+
+            internal Row Clone(CellGridModel owner)
+            {
+                var result = new Row(owner);
+                if (row != null)
+                {
+                    result.row = new Cell[row.Length];
+                    for (int i = 0; i < row.Length; i++)
+                    {
+                        var cell = row[i];
+                        if (cell != null)
+                            result.row[i] = cell.Clone();
+                    }
+                }
+                return result;
+            }
+            public override bool Equals(object? obj)
+            {
+                if (!(obj is Row orow))
+                    return false;
+                if (this.row == null || orow.row == null)
+                    return this.row == orow.row;
+                if (row.Length != orow.row.Length)
+                    return false;
+                for (int i = 0; i < row.Length; i++)
+                    if (!Equals(row[i], orow.row[i]))
+                        return false;
+                return true;
+            }
+            public override int GetHashCode()
+            {
+                int result = 0;
+                if (row != null)
+                {
+                    for (int i = 0; i < row.Length; i++)
+                    {
+                        var cell = row[i];
+                        if (cell == null)
+                            continue;
+                        result ^= cell.GetHashCode();
+                    }
+                }
+                return result;
+            }
 
             public event PropertyChangedEventHandler? PropertyChanged;
 

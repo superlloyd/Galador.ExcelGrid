@@ -16,8 +16,14 @@ namespace Galador.WPF.ExcelGrid
 {
     public class CellViewFactory : IControlFactory
     {
-        public bool Match(CellDescriptor descriptor)
-            => descriptor?.Item is Cell;
+        public bool Match(CellDescriptor descriptor, bool exactMatch)
+        {
+            var item = descriptor?.Item;
+            if (exactMatch)
+                return item?.GetType() == typeof(Cell);
+            return item is null || item is Cell;
+        }
+            
 
         protected static void SetBinding<T>(FrameworkElement target, DependencyProperty property, Cell cell, Expression<Func<Cell, T>> bindingsource, Action<Binding>? init = null)
         {

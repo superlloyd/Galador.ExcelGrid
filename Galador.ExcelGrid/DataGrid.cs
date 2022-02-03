@@ -1390,7 +1390,7 @@ namespace Galador.ExcelGrid
                             break;
                         }
 
-                        this.Operator.InsertColumns(i, 1);
+                        this.Operator.InsertColumns(j, 1);
                     }
 
                     var value = values[(i - outputRange.TopRow) % rows, (j - outputRange.LeftColumn) % columns];
@@ -1531,8 +1531,16 @@ namespace Galador.ExcelGrid
         /// </returns>
         protected virtual string FormatCellString(CellRef cell, object value)
         {
-            var formatString = this.GetFormatString(cell);
-            return FormatValue(value, formatString);
+            var pd = GetPropertyDefinition(cell);
+            var formatString = pd?.FormatString;
+
+            if (string.IsNullOrEmpty(formatString))
+                return value?.ToString();
+
+            if (!formatString.Contains("{0"))
+                formatString = "{0:" + formatString + "}";
+
+            return string.Format(formatString, value);
         }
 
         /// <summary>
@@ -1705,8 +1713,7 @@ namespace Galador.ExcelGrid
                     this.AutoFillCell,
                     out var result))
                 {
-                    var formatString = this.GetFormatString(cellRef);
-                    this.autoFillToolTip.Content = FormatValue(result, formatString);
+                    this.autoFillToolTip.Content = FormatCellString(cellRef, result);
                 }
 
                 this.autoFillToolTip.Placement = PlacementMode.Relative;
@@ -2221,29 +2228,6 @@ namespace Galador.ExcelGrid
             }
 
             return input;
-        }
-
-        /// <summary>
-        /// Formats the specified value with the specified format string.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <param name="formatString">The format string.</param>
-        /// <returns>
-        /// The format value.
-        /// </returns>
-        private static string FormatValue(object value, string formatString)
-        {
-            if (string.IsNullOrEmpty(formatString))
-            {
-                return value?.ToString();
-            }
-
-            if (!formatString.Contains("{0"))
-            {
-                formatString = "{0:" + formatString + "}";
-            }
-
-            return string.Format(formatString, value);
         }
 
         /// <summary>
@@ -3309,19 +3293,6 @@ namespace Galador.ExcelGrid
             }
 
             return this.DefaultColumnWidth;
-        }
-
-        /// <summary>
-        /// Gets the format string for the specified cell.
-        /// </summary>
-        /// <param name="cell">The cell reference.</param>
-        /// <returns>
-        /// The format string.
-        /// </returns>
-        private string GetFormatString(CellRef cell)
-        {
-            var pd = this.GetPropertyDefinition(cell);
-            return pd?.FormatString;
         }
 
         /// <summary>

@@ -30,8 +30,15 @@ namespace Galador.WPF.ExcelGrid
 
         public bool TrySetCellValue(CellRef cell, object value)
         {
-            if (value is not null && value is not string)
-                return false;
+            switch (value)
+            {
+                case null:
+                case string:
+                case Cell:
+                    break;
+                default:
+                    return false;
+            }
 
             var model = Model;
             if (model == null)
@@ -42,8 +49,19 @@ namespace Galador.WPF.ExcelGrid
             if (cell.Column < 0 || cell.Column >= model.RowCount)
                 return false;
 
-            model[Owner.FindSourceIndex(cell.Row), cell.Column].Text = (string)(value ?? "");
-            return true;
+            switch (value)
+            {
+                case null:
+                    model[Owner.FindSourceIndex(cell.Row), cell.Column].Text = null;
+                    return true;
+                case string svalue:
+                    model[Owner.FindSourceIndex(cell.Row), cell.Column].Text = svalue;
+                    return true;
+                case Cell cvalue:
+                    return model[Owner.FindSourceIndex(cell.Row), cell.Column].Apply(cvalue);
+                default:
+                    return false;
+            }
         }
         public object? GetCellValue(CellRef cell)
         {

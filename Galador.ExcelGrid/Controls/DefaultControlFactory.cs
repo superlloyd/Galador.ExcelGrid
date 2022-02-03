@@ -57,21 +57,35 @@ namespace Galador.ExcelGrid.Controls
         }
         readonly List<IControlFactory> otherFactories = new();
 
-        public bool Match(CellDescriptor descriptor)
-            => true;
+        public bool Match(CellDescriptor descriptor, bool exactMatch)
+            => !exactMatch;
 
-        public FrameworkElement CreateDisplayControl(CellDescriptor d)
+        IControlFactory FindFactory(CellDescriptor d)
         {
             // loop backward to get latest registration first, assuming they are the most well targeted
             for (int i = otherFactories.Count - 1; i >= 0; i--)
             {
                 var factory = otherFactories[i];
-                if (factory.Match(d))
-                {
-                    var view = factory.CreateDisplayControl(d);
-                    if (view != null)
-                        return view;
-                }
+                if (factory.Match(d, true))
+                    return factory;
+            }
+            for (int i = otherFactories.Count - 1; i >= 0; i--)
+            {
+                var factory = otherFactories[i];
+                if (factory.Match(d, false))
+                    return factory;
+            }
+            return null;
+        }
+
+        public FrameworkElement CreateDisplayControl(CellDescriptor d)
+        {
+            var factory = FindFactory(d);
+            if (factory != null)
+            {
+                var view = factory.CreateDisplayControl(d);
+                if (view != null)
+                    return view;
             }
 
             var element = this.CreateDisplayControlOverride(d);
@@ -80,13 +94,9 @@ namespace Galador.ExcelGrid.Controls
 
         public FrameworkElement CreateEditControl(CellDescriptor d)
         {
-            // loop backward to get latest registration first, assuming they are the most well targeted
-            for (int i = otherFactories.Count - 1; i >= 0; i--)
-            {
-                var factory = otherFactories[i];
-                if (factory.Match(d))
-                    return factory.CreateEditControl(d);
-            }
+            var factory = FindFactory(d);
+            if (factory != null)
+                return factory.CreateEditControl(d);
 
             if (d.PropertyDefinition.IsReadOnly)
             {

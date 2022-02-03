@@ -9,8 +9,10 @@ using System.Windows;
 
 namespace Galador.Document.Grid
 {
-    public class Cell : INotifyPropertyChanged, IComparable<Cell>, IComparable
+    [Serializable]
+    public class Cell : INotifyPropertyChanged, IComparable<Cell>, IComparable, ICloneable, IEquatable<Cell>
     {
+        [field:NonSerialized]
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void OnPropertyChanged([CallerMemberName]string? name = null)
@@ -33,6 +35,41 @@ namespace Galador.Document.Grid
 
         public int CompareTo(object? obj)
             => CompareTo(obj as Cell);
+
+
+        object ICloneable.Clone() => Clone();
+        public virtual Cell Clone()
+        {
+            var result = (Cell)base.MemberwiseClone();
+            result.PropertyChanged = null;
+            return result;
+        }
+
+        public virtual bool Equals(Cell? other)
+        {
+            if (other == null)
+                return false;
+            return Text == other.Text
+                && HorizontalAlignment == other.HorizontalAlignment;
+        }
+        public override bool Equals(object? obj) => Equals(obj as Cell);
+        public override int GetHashCode() => Text?.GetHashCode() ?? 0;
+
+        public override string? ToString() => Text; // make sure copy / paste work if not serializable
+
+        public virtual bool Apply(Cell? cell)
+        {
+            if (cell == null)
+            {
+                Text = null;
+            }
+            else
+            {
+                Text = cell.Text;
+                HorizontalAlignment = cell.HorizontalAlignment;
+            }
+            return true;
+        }
 
         public virtual string? Text
         {
