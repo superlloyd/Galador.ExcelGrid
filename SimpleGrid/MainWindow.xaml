@@ -16,10 +16,10 @@
 
         <StackPanel Orientation="Horizontal">
             <Button Content="Save Check" Click="DoSaveCheck"/>
+            <CheckBox IsChecked="{Binding ElementName=theGrid, Path=IsReadOnly, Mode=TwoWay}" Content="IsReadOnly"/>
         </StackPanel>
         
         <gme:ExcelDataGrid x:Name="theGrid" Grid.Row="1" />
-        
 
     </Grid>
 </Window>

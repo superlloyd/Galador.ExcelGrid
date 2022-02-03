@@ -75,15 +75,15 @@ namespace Galador.WPF.ExcelGrid
             return (propertyPath.Select(x => x.Name).Aggregate((s1, s2) => s1 + '.' + s2), propertyPath.Last());
         }
 
-        public FrameworkElement CreateDisplayControl(CellDescriptor d)
+        public FrameworkElement CreateDisplayControl(CellDescriptor d, bool isReadOnly)
         {
             var cell = d.Item as Cell;
             if (cell == null)
                 return null!;
-            return CreateDisplayControl(cell);
+            return CreateDisplayControl(cell, isReadOnly);
         }
 
-        protected virtual FrameworkElement CreateDisplayControl(Cell cell)
+        protected virtual FrameworkElement CreateDisplayControl(Cell cell, bool isReadOnly)
         {
             var text = new TextBlock
             {

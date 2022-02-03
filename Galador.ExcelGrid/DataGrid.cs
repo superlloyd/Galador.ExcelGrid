@@ -409,6 +409,12 @@ namespace Galador.ExcelGrid
             typeof(DataGrid),
             new UIPropertyMetadata(false));
 
+        public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register(
+            nameof(IsReadOnly),
+            typeof(bool),
+            typeof(DataGrid),
+            new UIPropertyMetadata(false, (o, e) => ((DataGrid)o).OnIsReadOnlyChanged((bool)e.NewValue)));
+
         /// <summary>
         /// The auto fill box.
         /// </summary>
@@ -1127,6 +1133,11 @@ namespace Galador.ExcelGrid
             get => (bool)this.GetValue(WrapItemsProperty);
             set => this.SetValue(WrapItemsProperty, value);
         }
+        public bool IsReadOnly
+        {
+            get => (bool)this.GetValue(IsReadOnlyProperty);
+            set => this.SetValue(IsReadOnlyProperty, value);
+        }
 
         /// <summary>
         /// Gets the collection view.
@@ -1169,25 +1180,25 @@ namespace Galador.ExcelGrid
         /// Gets a value indicating whether this instance can delete columns.
         /// </summary>
         /// <value><c>true</c> if this instance can delete columns; otherwise, <c>false</c> .</value>
-        protected virtual bool CanDeleteColumns => this.Operator?.CanDeleteColumns() ?? false;
+        protected virtual bool CanDeleteColumns => !this.IsReadOnly && (this.Operator?.CanDeleteColumns() ?? false);
 
         /// <summary>
         /// Gets a value indicating whether this instance can delete rows.
         /// </summary>
         /// <value><c>true</c> if this instance can delete rows; otherwise, <c>false</c> .</value>
-        protected virtual bool CanDeleteRows => this.Operator?.CanDeleteRows() ?? false;
+        protected virtual bool CanDeleteRows => !this.IsReadOnly && (this.Operator?.CanDeleteRows() ?? false);
 
         /// <summary>
         /// Gets a value indicating whether this instance can insert columns.
         /// </summary>
         /// <value><c>true</c> if this instance can insert columns; otherwise, <c>false</c> .</value>
-        protected virtual bool CanInsertColumns => this.Operator?.CanInsertColumns() ?? false;
+        protected virtual bool CanInsertColumns => !this.IsReadOnly && (this.Operator?.CanInsertColumns() ?? false);
 
         /// <summary>
         /// Gets a value indicating whether this instance can insert rows.
         /// </summary>
         /// <value><c>true</c> if this instance can insert rows; otherwise, <c>false</c> .</value>
-        protected virtual bool CanInsertRows => this.Operator?.CanInsertRows() ?? false;
+        protected virtual bool CanInsertRows => !this.IsReadOnly && (this.Operator?.CanInsertRows() ?? false);
 
         /// <summary>
         /// When overridden in a derived class, is invoked whenever application code or internal processes call <see
@@ -1312,7 +1323,8 @@ namespace Galador.ExcelGrid
         /// </summary>
         public void Paste()
         {
-            this.PasteOverride();
+            if (!this.IsReadOnly)
+                this.PasteOverride();
         }
 
         /// <summary>
@@ -2599,7 +2611,7 @@ namespace Galador.ExcelGrid
         private FrameworkElement CreateDisplayControl(CellRef cell)
         {
             var d = this.Operator.CreateCellDescriptor(cell);
-            var element = this.ControlFactory.CreateDisplayControl(d);
+            var element = this.ControlFactory.CreateDisplayControl(d, IsReadOnly);
             if (element == null)
             {
 #if DEBUG
@@ -2645,7 +2657,7 @@ namespace Galador.ExcelGrid
             this.RemoveEditControl();
             var cell = this.CurrentCell;
 
-            if (cell.Row >= this.Rows || cell.Column >= this.Columns)
+            if (this.IsReadOnly || cell.Row >= this.Rows || cell.Column >= this.Columns)
             {
                 return;
             }
@@ -4264,6 +4276,12 @@ namespace Galador.ExcelGrid
             }
         }
 
+
+        private void OnIsReadOnlyChanged(bool newValue)
+        {
+            UpdateGridContent();
+        }
+
         /// <summary>
         /// Updates all the UIElements of the grid (both cells, headers, row and column lines).
         /// </summary>
@@ -4569,7 +4587,10 @@ namespace Galador.ExcelGrid
         /// </summary>
         private void Cut()
         {
-            this.CutOverride();
+            if (this.IsReadOnly)
+                this.CopyOverride();
+            else
+                this.CutOverride();
         }
     }
 }

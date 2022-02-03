@@ -78,17 +78,17 @@ namespace Galador.ExcelGrid.Controls
             return null;
         }
 
-        public FrameworkElement CreateDisplayControl(CellDescriptor d)
+        public FrameworkElement CreateDisplayControl(CellDescriptor d, bool isReadOnly)
         {
             var factory = FindFactory(d);
             if (factory != null)
             {
-                var view = factory.CreateDisplayControl(d);
+                var view = factory.CreateDisplayControl(d, isReadOnly);
                 if (view != null)
                     return view;
             }
 
-            var element = this.CreateDisplayControlOverride(d);
+            var element = this.CreateDisplayControlOverride(d, isReadOnly);
             return element;
         }
 
@@ -120,7 +120,7 @@ namespace Galador.ExcelGrid.Controls
         /// </summary>
         /// <param name="d">The cell definition.</param>
         /// <returns>The display control.</returns>
-        protected virtual FrameworkElement CreateDisplayControlOverride(CellDescriptor d)
+        protected virtual FrameworkElement CreateDisplayControlOverride(CellDescriptor d, bool isReadOnly)
         {
             if (d.PropertyDefinition is TemplateColumnDefinition tcl)
             {
@@ -128,7 +128,7 @@ namespace Galador.ExcelGrid.Controls
             }
             else if (d.PropertyType.Is(typeof(bool)))
             {
-                return this.CreateCheckBoxControl(d);
+                return this.CreateCheckBoxControl(d, isReadOnly);
             }
             else if (d.PropertyType.Is(typeof(Color)))
             {
@@ -197,10 +197,12 @@ namespace Galador.ExcelGrid.Controls
         /// <returns>
         /// A binding.
         /// </returns>
-        protected Binding CreateBinding(CellDescriptor d)
+        protected Binding CreateBinding(CellDescriptor d, bool isReadOnly = false)
         {
             // two-way binding requires a path...
-            var bindingMode = d.PropertyDefinition.IsReadOnly || string.IsNullOrEmpty(d.BindingPath) ? BindingMode.OneWay : BindingMode.TwoWay;
+            var bindingMode = isReadOnly || d.PropertyDefinition.IsReadOnly || string.IsNullOrEmpty(d.BindingPath) 
+                ? BindingMode.OneWay 
+                : BindingMode.TwoWay;
 
             var formatString = d.PropertyDefinition.FormatString;
             if (formatString != null && !formatString.StartsWith("{"))
@@ -248,7 +250,7 @@ namespace Galador.ExcelGrid.Controls
         /// <returns>
         /// A CheckBox.
         /// </returns>
-        protected virtual FrameworkElement CreateCheckBoxControl(CellDescriptor d)
+        protected virtual FrameworkElement CreateCheckBoxControl(CellDescriptor d, bool isReadOnly)
         {
             if (d.PropertyDefinition.IsReadOnly)
             {
@@ -257,7 +259,7 @@ namespace Galador.ExcelGrid.Controls
                     VerticalAlignment = VerticalAlignment.Center,
                     HorizontalAlignment = d.PropertyDefinition.HorizontalAlignment,
                 };
-                cm.SetBinding(CheckMark.IsCheckedProperty, this.CreateBinding(d));
+                cm.SetBinding(CheckMark.IsCheckedProperty, this.CreateBinding(d, isReadOnly));
                 this.SetBackgroundBinding(d, cm);
                 return cm;
             }
