@@ -26,7 +26,7 @@ Also made the following changes to the original `DataGrid` (from https://github.
 *Remark* to succesfully use those 2 new models, one need to use the new
 `Galador.WPF.ExcelGrid.ExcelDataGrid` that use the appropriate `IDataGridOperator` and `IControlFactory`.
 
-*Remark* One can also use custmo subclass of `Cell` for the `CellGridModel` and register an `IControlFactory`
+*Remark* One can also use custom subclass of `Cell` for the `CellGridModel` and register an `IControlFactory`
 to render them.
 
 *Remark* maybe one day add formula to Cells with Lua?

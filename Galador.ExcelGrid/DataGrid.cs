@@ -4085,54 +4085,6 @@ namespace Galador.ExcelGrid
         }
 
         /// <summary>
-        /// Updates the sort description markers.
-        /// </summary>
-        private void UpdateSortDescriptionMarkers()
-        {
-            foreach (var sdm in this.sortDescriptionMarkers)
-            {
-                this.columnGrid.Children.Remove(sdm);
-            }
-
-            this.sortDescriptionMarkers.Clear();
-
-            if (!this.ItemsInRows)
-            {
-                return;
-            }
-
-            foreach (var sd in this.sortDescriptions)
-            {
-                var index = -1;
-                for (var i = 0; i < this.PropertyDefinitions.Count; i++)
-                {
-                    if (this.PropertyDefinitions[i].PropertyName == sd.PropertyName)
-                    {
-                        index = i;
-                        break;
-                    }
-                }
-
-                if (index == -1)
-                {
-                    continue;
-                }
-
-                var tb = new TextBlock
-                {
-                    Text = sd.Direction == ListSortDirection.Ascending ? "▼" : "▲",
-                    Foreground = Brushes.DarkGray,
-                    Margin = new Thickness(0, 0, 4, 0),
-                    HorizontalAlignment = System.Windows.HorizontalAlignment.Right,
-                    VerticalAlignment = VerticalAlignment.Center
-                };
-                Grid.SetColumn(tb, index);
-                this.columnGrid.Children.Add(tb);
-                this.sortDescriptionMarkers.Add(tb);
-            }
-        }
-
-        /// <summary>
         /// Updates the specified columns.
         /// </summary>
         /// <param name="columns">The column index.</param>
@@ -4230,6 +4182,54 @@ namespace Galador.ExcelGrid
                     Grid.SetColumn(splitter, j);
                     this.columnGrid.Children.Add(splitter);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Updates the sort description markers.
+        /// </summary>
+        private void UpdateSortDescriptionMarkers()
+        {
+            foreach (var sdm in this.sortDescriptionMarkers)
+            {
+                this.columnGrid.Children.Remove(sdm);
+            }
+
+            this.sortDescriptionMarkers.Clear();
+
+            if (!this.ItemsInRows)
+            {
+                return;
+            }
+
+            foreach (var sd in this.sortDescriptions)
+            {
+                var index = -1;
+                for (var i = 0; i < this.PropertyDefinitions.Count; i++)
+                {
+                    if (this.PropertyDefinitions[i].PropertyName == sd.PropertyName)
+                    {
+                        index = i;
+                        break;
+                    }
+                }
+
+                if (index == -1)
+                {
+                    continue;
+                }
+
+                var tb = new TextBlock
+                {
+                    Text = sd.Direction == ListSortDirection.Ascending ? "▼" : "▲",
+                    Foreground = Brushes.DarkGray,
+                    Margin = new Thickness(0, 0, 4, 0),
+                    HorizontalAlignment = System.Windows.HorizontalAlignment.Right,
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+                Grid.SetColumn(tb, index);
+                this.columnGrid.Children.Add(tb);
+                this.sortDescriptionMarkers.Add(tb);
             }
         }
 
